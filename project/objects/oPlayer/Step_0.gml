@@ -145,6 +145,43 @@ if (is_onwall_r || is_onwall_l) && (!is_onfloor) && (vsp > 0) {
 
 
 /**
+ * CROUCHING / GROUND POUND
+ */
+if (key_crouch) {
+	// Cancel any movement
+	move = 0;
+	if (!is_onfloor) && (!is_onwall_l) && (!is_onwall_r) {
+		// Ground pound
+		if (!is_groundpound) {
+			vsp = 0;
+			hsp = 0;
+			timer_groundpound = 0;
+			is_groundpound = true;
+		}
+	} else {
+		// Just a crouch
+	}
+}
+if (is_groundpound) {
+	hsp = 0;
+	timer_groundpound += 1;
+	if (timer_groundpound >= 20) {
+		if (vsp < 1) {
+			vsp = 1;
+		} else {
+			vsp *= 1.5;
+		}
+	} else {
+		vsp = 0;
+	}
+}
+if (is_onfloor) {
+	is_groundpound = false;
+	timer_groundpound = 0;
+}
+
+
+/**
  * HORIZONTAL MOVEMENT + EASING
  */
 switch (move) {
@@ -196,37 +233,7 @@ if (!is_wallsliding) && (!is_groundpound) {
 	vsp = vsp + grv;
 }
 
-/**
- * CROUCHING / GROUND POUND
- */
-if (key_crouch) {
-	// Cancel any movement
-	move = 0;
-	if (!is_onfloor) && (!is_onwall_l) && (!is_onwall_r) {
-		// Ground pound
-		if (!is_groundpound) {
-			vsp = 0;
-			timer_groundpound = 0;
-			is_groundpound = true;
-		}
-	} else {
-		// Just a crouch
-	}
-}
-if (is_groundpound) {
-	timer_groundpound += 1;
-	if (timer_groundpound == 20) {
-		vsp = (grv*3);
-	} else if (timer_groundpound > 20) {
-		vsp = vsp + (grv*3);
-	} else {
-		vsp = 0;
-	}
-}
-if (is_onfloor) {
-	is_groundpound = false;
-	timer_groundpound = 0;
-}
+
 
 /**
  * TERMINAL VELOCITY
@@ -262,7 +269,7 @@ y += vsp;
  * ANIMATION
  */
 
-if (!is_onfloor) {
+if (!is_onfloor) && (!is_groundpound) {
 	// Jumping
 	image_speed = 0;
 	sprite_index = sPlayerJump;
@@ -344,10 +351,12 @@ if (key_crouch_released) && (is_onfloor) {
 }
 if (is_groundpound) {
 	sprite_index = sPlayerCrouch;
+	image_speed = 0;
+	image_index = 4;
 	if (timer_groundpound >= 20) {
 		render_angle = 0;
 	} else {
-		render_angle += 15 * (sign(dir) * -1);
+		render_angle += 18 * (sign(dir) * -1);
 	}
 }
 

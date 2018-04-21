@@ -1,6 +1,6 @@
 hsp = 0;
 vsp = 0;
-vsp_max = 20;
+vsp_max = 30;
 grv = 0.6;
 walksp = 5;
 runsp = 9;
@@ -34,3 +34,4 @@ draw_yscale = 1;
 
 // Timers
 timer_groundpound = 0;
+timer_sideflip = 0;
