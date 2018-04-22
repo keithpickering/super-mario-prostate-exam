@@ -11,10 +11,19 @@ key_run = keyboard_check(vk_control);
 key_crouch = keyboard_check(vk_down);
 key_crouch_released = keyboard_check_released(vk_down);
 
-// Check status vars
+// Check if we're against a wall
+if (place_meeting(x + 1, y, oWall)) {
+	is_onwall = 1;
+} else if (place_meeting(x - 1, y, oWall)) {
+	is_onwall = -1;
+} else {
+	is_onwall = 0;
+}
+
+// Check if we're on the floor
 is_onfloor = place_meeting(x, y + 1, oWall);
-is_onwall_r = place_meeting(x + 1, y, oWall);
-is_onwall_l = place_meeting(x - 1, y, oWall);
+
+
 
 // Calculate movement direction
 var move = key_right - key_left;
@@ -33,7 +42,7 @@ if (!key_run) {
 	// If jumping, stop accelerating
 	if (abs(hsp) > walksp) && (is_onfloor) this_accel /= 20;
 }
-if (!is_onfloor) && (!is_walljumping) {
+if (!is_onfloor) && (is_jump != 3) {
 	// Accelerate quicker in mid-air (more precise control)
 	// Decelerate slower (more natural jump arc)
 	this_accel *= 2;
@@ -43,138 +52,111 @@ if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
 	// This makes it less slippery when quickly changing direction
 	this_accel *= 1.5;	
 }
-if (is_onwall_l) || (is_onwall_r) {
-	// Reset running speed
-	//if (hsp >= walksp) hsp = walksp;
-}
 
+if (is_onfloor) {
+	// Status vars
+	is_jump = 0;
+	is_wallslide = 0;
+	is_groundpound = 0;
 
-
-/**
- * JUMPING
- */
-if (is_onfloor) && (key_jump_pressed) {
-	// Side flip
-	if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
-		// Turning around (skidding)
-		vsp = -jump_max * 1.15;
-		hsp += move * sideflip_force;
-		is_sideflip = true;
-	} else {
-		// Jump higher the faster we're moving
-		var jump_multiplier = abs(hsp) / walksp;
-		if (jump_multiplier > 1) {
-			vsp = -jump_max * jump_multiplier;
-			if (vsp < -jump_max_running) vsp = -jump_max_running;
-		} else {
-			vsp = -jump_max;
-		}
-		is_jumping = true;
-	}
-} else if (is_onwall_l) || (is_onwall_r) || (is_onfloor) {
-	is_jumping = false;
-	is_sideflip = false;
-}
-// Check if jump key has been released while still moving up,
-// and if so prevent from jumping to the maximum height
-if (!key_jump) && (sign(vsp) == -1) {
-	vsp /= 1.5;	
-}
-
-
-/**
- * WALL JUMPING
- */
-if (is_onwall_r || is_onwall_l) && (!is_onfloor) && (vsp > 0) {
-	// We're on a wall, not on the floor, and moving down. AKA sliding	
-	// If we just came into contact with the wall, set a constant
-	// vertical speed to start
-	if (!is_wallsliding) {
-		vsp = 1;
-		// Turn around
-		if (is_onwall_l) {
-			dir = 1;
-		} else {
-			dir = -1;
-		}
-	}
-	// Increase vertical speed as we slide down
-	vsp *= 1.05;
-	if (vsp > wallslidesp) vsp = wallslidesp;
+	// Timers
+	timer_groundpound = 0;
 	
-	// Update vars
-	is_wallsliding = true;
-	is_walljumping = false;
-	
-	// Allow jumping away from the wall
+	// Jumping
 	if (key_jump_pressed) {
-		vsp = -jump_max / 1.1;
-		if (is_onwall_r) {
-			// Jump to the left
-			hsp += -walljump_force;
+		if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
+			// Side flip
+			vsp = -jump_max * 1.15;
+			hsp += move * sideflip_force;
+			is_jump = 2;
 		} else {
-			// Jump to the right
-			hsp += walljump_force;
+			// Regular jump
+			// Jump higher the faster we're moving
+			var jump_multiplier = abs(hsp) / walksp;
+			if (jump_multiplier > 1) {
+				vsp = -jump_max * jump_multiplier;
+				if (vsp < -jump_max_running) vsp = -jump_max_running;
+			} else {
+				vsp = -jump_max;
+			}
+			is_jump = 1;
 		}
-		// Update vars
-		is_wallsliding = false;
-		is_walljumping = true;
 	}
-} else if (is_onfloor) {
-	// On the floor = no longer jumping
-	is_walljumping = false;
 	
-	if (!is_onwall_r && !is_onwall_l) {
-		// Stop sliding if we reach the floor or are
-		// no longer against a wall
-		is_wallsliding = false;
+	// Crouching
+	if (key_crouch) {
+		is_crouch = 1;
+		// Cancel any movement
+		move = 0;
+	} else {
+		is_crouch = 0;
 	}
-} else if (is_walljumping) {
-	// Decrease walljump force as we move away from the wall
-	//hsp -= lerp(0, walljump_force*sign(hsp), 0.00001);
-	hsp = walljump_force * sign(hsp);
 } else {
-	// Restore normal gravity if we cancel sliding
-	is_wallsliding = false;
-}
-
-
-/**
- * CROUCHING / GROUND POUND
- */
-if (key_crouch) {
-	// Cancel any movement
-	move = 0;
-	if (!is_onfloor) && (!is_onwall_l) && (!is_onwall_r) {
+	// Check if jump key has been released while still moving up,
+	// and if so prevent from jumping to the maximum height
+	if (!key_jump) && (sign(vsp) == -1) {
+		vsp /= 1.5;	
+	}
+	
+	// Check if we're against a wall
+	if (is_onwall != 0) {
+		if (vsp > 0) {
+			// If we just came into contact with the wall, start sliding down
+			if (!is_wallslide) {
+				vsp = 1;
+				// Turn around
+				dir = is_onwall * -1;
+			}
+			// Increase vertical speed as we slide down
+			vsp *= 1.05;
+			if (vsp > wallslidesp) vsp = wallslidesp;
+	
+			// Update vars
+			is_wallslide = 1;
+			is_jump = 0;
+	
+			// Allow jumping away from the wall
+			if (key_jump_pressed) {
+				vsp = -jump_max / 1.1;
+				// Jump in the correct direction
+				hsp += walljump_force * is_onwall * -1;
+				// Update vars
+				is_wallslide = 0;
+				is_jump = 3;
+			}
+		}
+		if (is_jump == 3) {
+			// Decrease walljump force as we move away from the wall
+			//hsp -= lerp(0, walljump_force*sign(hsp), 0.00001);
+			//hsp = walljump_force * sign(hsp);
+		}
+	} else {
+		// If we're not on a wall, cancel wallsliding
+		is_wallslide = 0;
+		
 		// Ground pound
-		if (!is_groundpound) {
+		if (key_crouch) && (!is_groundpound) && (!is_crouch) {
 			vsp = 0;
 			hsp = 0;
 			timer_groundpound = 0;
-			is_groundpound = true;
+			is_groundpound = 1;
+		} else if (is_groundpound) {
+			hsp = 0;
+			timer_groundpound += 1;
+			if (timer_groundpound >= 20) {
+				if (vsp < 1) {
+					vsp = 1;
+				} else {
+					vsp *= 1.5;
+				}
+			} else {
+				vsp = 0;
+			}
 		}
-	} else {
-		// Just a crouch
 	}
-}
-if (is_groundpound) {
-	hsp = 0;
-	timer_groundpound += 1;
-	if (timer_groundpound >= 20) {
-		if (vsp < 1) {
-			vsp = 1;
-		} else {
-			vsp *= 1.5;
-		}
-	} else {
-		vsp = 0;
-	}
-}
-if (is_onfloor) {
-	is_groundpound = false;
-	timer_groundpound = 0;
 }
 
+show_debug_message(is_onwall);
 
 /**
  * HORIZONTAL MOVEMENT + EASING
@@ -182,7 +164,7 @@ if (is_onfloor) {
 switch (move) {
 	case 1:
 		// Move right
-		if (!is_wallsliding || !is_onwall_r) {
+		if (!is_wallslide || is_onwall != 1) {
 			if (dir != 1) {
 				is_changingdir = true;
 				changedir_pos = x;
@@ -194,7 +176,7 @@ switch (move) {
 		break;
 	case -1:
 		// Move left
-		if (!is_wallsliding || !is_onwall_l) {
+		if (!is_wallslide || is_onwall != -1) {
 			if (dir != -1) {
 				is_changingdir = true;
 				changedir_pos = x;
@@ -219,22 +201,17 @@ if (is_changingdir) {
 	}
 }
 
-
-
 /**
  * GRAVITY
  */
-if (!is_wallsliding) && (!is_groundpound) {
+if (!is_wallslide) && (!is_groundpound) {
 	vsp = vsp + grv;
 }
-
-
 
 /**
  * TERMINAL VELOCITY
  */
 if (vsp > vsp_max) vsp = vsp_max;
-
 
 /**
  * HORIZONTAL COLLISION
@@ -247,7 +224,6 @@ if (place_meeting(x + hsp, y, oWall)) {
 }
 x += hsp;
 
-
 /**
  * VERTICAL COLLISION
  */
@@ -259,16 +235,14 @@ if (place_meeting(x, y + vsp, oWall)) {
 }
 y += vsp;
 
-
 /**
  * ANIMATION
  */
 
-
 if (!is_onfloor) && (!is_groundpound) {
 	image_speed = 0;
 	
-	if (is_sideflip) {
+	if (is_jump == 2) {
 		if (abs(render_angle) < 360) {
 			sprite_index = sPlayerFlip;
 			render_angle -= 10 * sign(dir);
@@ -315,7 +289,7 @@ if (!is_onfloor) && (!is_groundpound) {
 }
 
 // Sliding down a wall
-if (is_onwall_r || is_onwall_l) && (!is_onfloor) && (vsp > 0) {
+if (is_wallslide) {
 	sprite_index = sPlayerSlide;
 	render_angle = 0;
 }
@@ -352,5 +326,3 @@ if (is_groundpound) {
 
 // Flip sprite based on direction
 draw_xscale = dir;
-
-show_debug_message(is_wallsliding);
