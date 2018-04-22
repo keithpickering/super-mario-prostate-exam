@@ -57,7 +57,7 @@ if (is_onfloor) && (key_jump_pressed) {
 	// Side flip
 	if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
 		// Turning around (skidding)
-		vsp = -jump_max * 1.2;
+		vsp = -jump_max * 1.15;
 		hsp += move * sideflip_force;
 		is_sideflip = true;
 	} else {
@@ -71,19 +71,14 @@ if (is_onfloor) && (key_jump_pressed) {
 		}
 		is_jumping = true;
 	}
-}
-if (is_sideflip) {
-	hsp += sideflip_force * sign(hsp);	
+} else if (is_onwall_l) || (is_onwall_r) || (is_onfloor) {
+	is_jumping = false;
+	is_sideflip = false;
 }
 // Check if jump key has been released while still moving up,
 // and if so prevent from jumping to the maximum height
 if (!key_jump) && (sign(vsp) == -1) {
 	vsp /= 1.5;	
-}
-// Cancel if we hit a wall or the floor
-if (is_onwall_l) || (is_onwall_r) || (is_onfloor) {
-	is_jumping = false;
-	is_sideflip = false;
 }
 
 
@@ -269,31 +264,29 @@ y += vsp;
  * ANIMATION
  */
 
+
 if (!is_onfloor) && (!is_groundpound) {
-	// Jumping
 	image_speed = 0;
-	sprite_index = sPlayerJump;
-	if (sign(vsp) > 0) {
-		image_index = 1;
+	
+	if (is_sideflip) {
+		if (abs(render_angle) < 360) {
+			sprite_index = sPlayerFlip;
+			render_angle -= 10 * sign(dir);
+		} else {
+			sprite_index = sPlayerJump;
+			image_index = 1;
+		}
 	} else {
-		image_index = 0;
+		sprite_index = sPlayerJump;
+		if (sign(vsp) > 0) {
+			image_index = 1;
+		} else {
+			image_index = 0;
+		}
 	}
-	
-	// Stretch on jump
-	//draw_yscale = 1.5;
-	//draw_xscale = .75;
-} else {
+} else if (is_onfloor) {
 	image_speed = 1;
-	
-	// Ease stretch
-	//draw_xscale = lerp(draw_xscale, 1, 0.1);
-	//draw_yscale = lerp(draw_yscale, 1, 0.1);
-	
-	// Squash on landing
-	//if (!place_meeting(x, yprevious + 1, oWall)) {
-	//	draw.xscale = 1.25;
-	//	draw.yscale = .75;
-	//}
+	render_angle = 0;
 	
 	if (hsp != 0) {
 		if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
@@ -324,15 +317,12 @@ if (!is_onfloor) && (!is_groundpound) {
 // Sliding down a wall
 if (is_onwall_r || is_onwall_l) && (!is_onfloor) && (vsp > 0) {
 	sprite_index = sPlayerSlide;
+	render_angle = 0;
 }
 
 // Crouching / Ground Pound
 if (key_crouch) {
-	if (!is_onfloor) {
-		// Ground pound
-		sprite_index = sPlayerCrouch;
-	} else {
-		// Just a crouch
+	if (is_onfloor) {
 		sprite_index = sPlayerCrouch;
 		if (keyboard_check_pressed(vk_down)) {
 			// Fix animation bug
@@ -352,14 +342,15 @@ if (key_crouch_released) && (is_onfloor) {
 if (is_groundpound) {
 	sprite_index = sPlayerCrouch;
 	image_speed = 0;
-	image_index = 4;
+	image_index = 3;
 	if (timer_groundpound >= 20) {
 		render_angle = 0;
 	} else {
-		render_angle += 18 * (sign(dir) * -1);
+		render_angle -= 18 * sign(dir);
 	}
 }
 
+// Flip sprite based on direction
 draw_xscale = dir;
 
-//show_debug_message(hsp);
+show_debug_message(is_wallsliding);

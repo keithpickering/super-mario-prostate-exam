@@ -9,15 +9,16 @@ accel = 0.15;
 decel = 0.15;
 changedir_limit = 48; // Amount we can move in the other direction before the camera starts moving
 
-jump_max = 17;
-jump_max_running = 18.5;
+jump_max = 16;
+jump_max_running = 18;
 jump_current = 0;
 walljump_force = 5;
-sideflip_force = 2;
+sideflip_force = 3.5;
 
 // Status variables
 dir = 1;
-is_againstwall = false;
+is_onwall_l = false;
+is_onwall_r = false;
 is_onfloor = false;
 is_jumping = false;
 is_sideflip = false;
