@@ -23,9 +23,9 @@ if (place_meeting(x + 1, y, oWall)) {
 // Check if we're on the floor
 is_onfloor = place_meeting(x, y + 1, oWall);
 is_onslope = 0;
-if (place_meeting(x + 1, y + 1, oSlope)) {
+if (place_meeting(x + 2, y + 1, oSlope)) {
 	is_onslope = -1;
-} else if (place_meeting(x - 1, y + 1, oSlope)) {
+} else if (place_meeting(x - 2, y + 1, oSlope)) {
 	is_onslope = 1;
 }
 
@@ -132,7 +132,8 @@ if (is_onfloor) {
 	
 	if (is_onslope != 0) {
 		if (is_crouch) {
-			move = is_onslope;
+			hsp += 0.25 * is_onslope;
+			this_decel /= 2;
 		}
 	}
 } else {
@@ -455,11 +456,12 @@ if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19 && !key_
 draw_xscale = dir;
 
 // Stretch & Squash during jump
-if (key_jump_pressed) && (is_onfloor || is_onwall != 0) {
+if (key_jump_pressed) && (is_onfloor || is_onwall != 0) && (!is_jump != 2) {
 	draw_yscale = 1.3;
-	draw_xscale = 0.25 * dir;
+	draw_xscale = 0.5 * dir;
 } else if (timer_groundpound > 25) {
 	draw_yscale = 1 + (timer_groundpound / 50);
+	if (draw_yscale > 1.75) draw_yscale = 1.75;
 	draw_xscale = 0.65 * dir;
 }
 
