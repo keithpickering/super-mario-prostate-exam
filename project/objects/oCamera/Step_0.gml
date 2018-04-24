@@ -40,4 +40,4 @@ x += (x_to - x) / cam_pan;
 y += (y_to - y) / cam_pan;
 
 
-camera_set_view_pos(cam, x - view_w_half, y - view_h_half);
+camera_set_view_pos(global.cam, x - view_w_half, y - view_h_half);

@@ -5,9 +5,9 @@
 // Check pressed keys
 key_left = keyboard_check(vk_left);
 key_right = keyboard_check(vk_right);
-key_jump = keyboard_check(vk_space);
-key_jump_pressed = keyboard_check_pressed(vk_space);
-key_run = keyboard_check(vk_control);
+key_jump = keyboard_check(ord("Z"));
+key_jump_pressed = keyboard_check_pressed(ord("Z"));
+key_run = keyboard_check(ord("X"));
 key_crouch = keyboard_check(vk_down);
 key_crouch_released = keyboard_check_released(vk_down);
 
@@ -38,33 +38,57 @@ if (!key_run) {
 } else {
 	// Running speed
 	hsp_max = move * runsp;
+	
 	// Accelerate slowly toward the max run speed
 	// If jumping, stop accelerating
-	if (abs(hsp) > walksp) && (is_onfloor) this_accel /= 20;
+	if (abs(hsp) > walksp) {
+		if (is_onfloor) {
+			this_accel /= 8;
+		} else {
+			this_accel = 0;
+		}
+		
+		// Keep track of run level
+		/*if (run_level <= 5) {
+			timer_run += 1;
+			if (timer_run > 75) {
+				run_level += 1;
+				timer_run = 0;
+			}
+		}*/
+	}
 }
-if (!is_onfloor) && (is_jump != 3) {
-	// Accelerate quicker in mid-air (more precise control)
-	// Decelerate slower (more natural jump arc)
-	this_accel *= 2;
-	this_decel /= 3;
+if (!is_onfloor) {
+	// Decelerate slower in mid-air (more natural jump arc)
+	this_decel /= 10;
+	if (is_jump == 3) {
+		// For walljumps, accelerate slower too
+		// This forces us off the wall a little more
+		// Otherwise you can keep from falling indefinitely
+		this_accel /= 1.2;
+	}
 }
 if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
 	// This makes it less slippery when quickly changing direction
-	this_accel *= 1.5;	
+	if (abs(hsp) <= walksp) {
+		this_accel *= 1.5;
+	} else {
+		this_accel *= 3;
+	}
 }
 
 if (is_onfloor) {
 	// Status vars
 	is_jump = 0;
 	is_wallslide = 0;
-	is_groundpound = 0;
 
 	// Timers
 	timer_groundpound = 0;
+	timer_wallslide = 0;
 	
 	// Jumping
 	if (key_jump_pressed) {
-		if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
+		if ((hsp < 0 && key_right) || (hsp > 0 && key_left)) && (move != 0) {
 			// Side flip
 			vsp = -jump_max * 1.15;
 			hsp += move * sideflip_force;
@@ -83,10 +107,18 @@ if (is_onfloor) {
 		}
 	}
 	
-	// Crouching
-	if (key_crouch) {
+	is_groundpound = 0;
+	
+	// Complete a ground pound
+	/*if (is_groundpound) {
+		move = 0;
+		timer_groundpound_done += 1;
+		if (timer_groundpound_done >= 20) {
+			is_groundpound = 0;
+			timer_groundpound_done = 0;
+		}
+	} else*/ if (key_crouch) {
 		is_crouch = 1;
-		// Cancel any movement
 		move = 0;
 	} else {
 		is_crouch = 0;
@@ -98,22 +130,28 @@ if (is_onfloor) {
 		vsp /= 1.5;	
 	}
 	
-	// Check if we're against a wall
 	if (is_onwall != 0) {
 		if (vsp > 0) {
-			// If we just came into contact with the wall, start sliding down
 			if (!is_wallslide) {
-				vsp = 1;
-				// Turn around
+				// Hit the wall just now
+				// Turn around to face away from wall
 				dir = is_onwall * -1;
+				vsp = 0;
 			}
-			// Increase vertical speed as we slide down
-			vsp *= 1.05;
-			if (vsp > wallslidesp) vsp = wallslidesp;
-	
+			
 			// Update vars
 			is_wallslide = 1;
 			is_jump = 0;
+			
+			// Prevent moving off the wall until we've been on it for 20 frames
+			timer_wallslide += 1;
+			if (timer_wallslide < 20){
+				move = 0;
+			}
+			
+			// Increase vertical speed as we slide down
+			//vsp *= 1.05;
+			//if (vsp > wallslidesp) vsp = wallslidesp;
 	
 			// Allow jumping away from the wall
 			if (key_jump_pressed) {
@@ -125,38 +163,32 @@ if (is_onfloor) {
 				is_jump = 3;
 			}
 		}
-		if (is_jump == 3) {
-			// Decrease walljump force as we move away from the wall
-			//hsp -= lerp(0, walljump_force*sign(hsp), 0.00001);
-			//hsp = walljump_force * sign(hsp);
-		}
 	} else {
 		// If we're not on a wall, cancel wallsliding
 		is_wallslide = 0;
 		
 		// Ground pound
 		if (key_crouch) && (!is_groundpound) && (!is_crouch) {
-			vsp = 0;
+			vsp = 8;
 			hsp = 0;
 			timer_groundpound = 0;
 			is_groundpound = 1;
 		} else if (is_groundpound) {
 			hsp = 0;
 			timer_groundpound += 1;
+				
 			if (timer_groundpound >= 20) {
 				if (vsp < 1) {
-					vsp = 1;
+					vsp = 3;
 				} else {
 					vsp *= 1.5;
 				}
 			} else {
-				vsp = 0;
+				vsp -= 1.75;
 			}
 		}
 	}
 }
-
-show_debug_message(is_onwall);
 
 /**
  * HORIZONTAL MOVEMENT + EASING
@@ -164,12 +196,14 @@ show_debug_message(is_onwall);
 switch (move) {
 	case 1:
 		// Move right
-		if (!is_wallslide || is_onwall != 1) {
-			if (dir != 1) {
-				is_changingdir = true;
-				changedir_pos = x;
+		if (!is_wallslide) || (is_onwall != 1) {
+			if (is_jump != 2) {
+				if (dir != 1) {
+					is_changingdir = true;
+					changedir_pos = x;
+				}
+				dir = 1;
 			}
-			dir = 1;
 		}
 		hsp += this_accel;
 		if (hsp > hsp_max) hsp = hsp_max;
@@ -177,11 +211,13 @@ switch (move) {
 	case -1:
 		// Move left
 		if (!is_wallslide || is_onwall != -1) {
-			if (dir != -1) {
-				is_changingdir = true;
-				changedir_pos = x;
+			if (is_jump != 2) {
+				if (dir != -1) {
+					is_changingdir = true;
+					changedir_pos = x;
+				}
+				dir = -1;
 			}
-			dir = -1;	
 		}
 		if (sign(hsp) == 1) is_changingdir = true;
 		hsp -= this_accel;
@@ -189,56 +225,118 @@ switch (move) {
 		break;
 	case 0:
 		// Movement ended - decelerate to stop
-		if (hsp >= this_decel) hsp -= this_decel;
-		if (hsp <= -this_decel) hsp += this_decel;
-		if (hsp > -this_decel) && (hsp < this_decel) hsp = 0;
+		if (hsp >= this_decel) {
+			hsp -= this_decel;
+		} else if (hsp <= -this_decel) {
+			hsp += this_decel;
+		} else if (hsp > -this_decel) && (hsp < this_decel) {
+			hsp = 0;
+		}
 		break;
 }
 if (is_changingdir) {
 	if (x > changedir_pos + changedir_limit) || (x < changedir_pos - changedir_limit) {
-		is_changingdir = false;
+		is_changingdir = false; 
 		changedir_pos = 0;
 	}
 }
 
+
 /**
  * GRAVITY
  */
-if (!is_wallslide) && (!is_groundpound) {
-	vsp = vsp + grv;
+if (!is_groundpound) {
+	if (!is_wallslide) {
+		vsp = vsp + grv;
+	} else {
+		// Friction from wall
+		vsp = vsp + grv - frc;
+	}
 }
-
-/**
- * TERMINAL VELOCITY
- */
 if (vsp > vsp_max) vsp = vsp_max;
+
 
 /**
  * HORIZONTAL COLLISION
  */
-if (place_meeting(x + hsp, y, oWall)) {
-	while (!place_meeting(x + sign(hsp), y, oWall)) {
-		x += sign(hsp);
+
+if (place_meeting(x+hsp,y,oWall)){
+    // Up slope
+	var yplus = 0;
+    while (place_meeting(x + hsp, y - yplus, oWall)) && (yplus <= abs(hsp)) {
+		yplus += 1;
 	}
-	hsp = 0;
+	
+    if (place_meeting(x + hsp, y - yplus, oWall)){
+        while (!place_meeting(x + sign(hsp), y, oWall)) {
+			x += sign(hsp);
+		}
+        hsp = 0;
+    } else {
+        y -= yplus;
+    }
 }
 x += hsp;
+
+// Down slope
+if (!place_meeting(x, y, oWall)) && (vsp >= 0) && (place_meeting(x, y+2+abs(hsp), oWall)) {
+    while (!place_meeting(x, y + 1, oWall)) {
+		y += 1;
+	}
+}
 
 /**
  * VERTICAL COLLISION
  */
+
 if (place_meeting(x, y + vsp, oWall)) {
 	while (!place_meeting(x, y + sign(vsp), oWall)) {
 		y += sign(vsp);
 	}
 	vsp = 0;
+} else if (abs(hsp) > walksp) {
+	// Threshold for running across gaps
+	if (place_meeting(x + 48, y + sign(vsp), oWall)) {
+		vsp = 0;
+	}
 }
 y += vsp;
+
+
+// Vertical
+/*repeat(abs(vsp)) {
+    if (!place_meeting(x, y + sign(vsp), oWall)) {
+        y += sign(vsp); 
+	} else {
+        vsp = 0;
+        break;
+    }
+}
+
+// Horizontal
+repeat(abs(hsp)) {
+	// Move up slope
+    if (place_meeting(x + sign(hsp), y, oWall) && !place_meeting(x + sign(hsp), y - 1, oWall))
+        --y;
+    
+    // Move down slope
+    if (!place_meeting(x + sign(hsp), y, oWall) && !place_meeting(x + sign(hsp), y + 1, oWall) && place_meeting(x + sign(hsp), y + 2, oWall))
+        ++y; 
+
+    if (!place_meeting(x + sign(hsp), y, oWall)) {
+        x += sign(hsp); 
+	} else {
+        hsp = 0;
+        break;
+    }
+}*/
+
+
+
 
 /**
  * ANIMATION
  */
-
 if (!is_onfloor) && (!is_groundpound) {
 	image_speed = 0;
 	
@@ -308,21 +406,47 @@ if (key_crouch) {
 		}
 	}
 }
-if (key_crouch_released) && (is_onfloor) {
+if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19) {
 	sprite_index = sPlayerCrouch;
 	image_speed = 0;
-	image_index = 2;
-}
-if (is_groundpound) {
-	sprite_index = sPlayerCrouch;
-	image_speed = 0;
-	image_index = 3;
-	if (timer_groundpound >= 20) {
-		render_angle = 0;
+	image_index = 1;
+} else if (is_groundpound) {
+	if (!is_onfloor) {
+		sprite_index = sPlayerRoll;
+		image_speed = 0;
+		if (timer_groundpound >= 20) {
+			render_angle = 0;
+		} else if (abs(render_angle) < 360) {
+			render_angle -= 18 * sign(dir);
+		}
 	} else {
-		render_angle -= 18 * sign(dir);
+		sprite_index = sPlayerCrouch;
+		image_speed = 0;
+		render_angle = 0;
+		if (yprevious + 2 != y) {
+			image_index = 3;
+		} else {
+			image_index = 2;
+		}
 	}
 }
 
 // Flip sprite based on direction
 draw_xscale = dir;
+
+// Stretch & Squash during jump
+if (key_jump_pressed) {
+	draw_yscale = 1.25;
+	draw_xscale = 0.75 * dir;
+}
+
+draw_xscale = lerp(draw_xscale, dir, 0.1);
+draw_yscale = lerp(draw_yscale, 1, 0.1);
+
+if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
+	draw_yscale = 0.75;
+	draw_xscale = 1.25 * dir;
+}
+
+// Adjust y position (visual only)
+y_correct = (sprite_height - (sprite_height*draw_yscale)) / 2;
