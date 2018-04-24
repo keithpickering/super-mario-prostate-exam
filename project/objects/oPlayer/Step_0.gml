@@ -455,21 +455,28 @@ if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19 && !key_
 // Flip sprite based on direction
 draw_xscale = dir;
 
-// Stretch & Squash during jump
-if (key_jump_pressed) && (is_onfloor || is_onwall != 0) && (!is_jump != 2) {
-	draw_yscale = 1.3;
-	draw_xscale = 0.5 * dir;
+// Stretch on jump
+if (key_jump_pressed) && (is_onfloor || is_onwall != 0) {
+	draw_yscale = 1.35;
+	draw_xscale = 0.75 * dir;
+	if (is_onfloor) {
+		instance_create_depth(x - sprite_get_width(sImpact)/2, y + sprite_height/2 - sprite_get_height(sImpact)/2 + 4, 1, oImpact);
+	} else {
+		//instance_create_depth(x, y, 1, oImpactWall);	
+	}
 } else if (timer_groundpound > 25) {
 	draw_yscale = 1 + (timer_groundpound / 50);
-	if (draw_yscale > 1.75) draw_yscale = 1.75;
-	draw_xscale = 0.65 * dir;
+	if (draw_yscale > 1.5) draw_yscale = 1.5;
+	draw_xscale = 0.75 * dir;
 }
 
+// Gradually return to non-stretched values
 draw_xscale = lerp(draw_xscale, dir, 0.1);
 draw_yscale = lerp(draw_yscale, 1, 0.1);
 
+// Squash on landing
 if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
-	draw_yscale = 0.8;
+	draw_yscale = 0.75;
 	draw_xscale = 1.25 * dir;
 }
 

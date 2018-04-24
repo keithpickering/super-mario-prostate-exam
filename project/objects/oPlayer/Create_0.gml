@@ -1,31 +1,45 @@
+/**
+ * Movement variables
+ */
 hsp = 0;
 vsp = 0;
 vsp_max = 20;
 grv = 0.6;
-frc = 0.5;
-walksp = 5;
+frc = 0.5; // Friction when sliding down a wall
+walksp = 4;
 runsp = 9;
 wallslidesp = 6;
 accel = 0.15;
 decel = 0.15;
-changedir_limit = 48; // Amount we can move in the other direction before the camera starts moving
 
-// Store the difference between bottom/center origin
-origin_diff = 38;
-
+/**
+ * Jump-specific variables
+ */
 jump_max = 16.5;
 jump_max_running = 18.5;
-jump_current = 0;
 walljump_force = walksp;
 sideflip_force = 3.5;
 
-// Status variables
+/**
+ * Keep track of our direction
+ * -1: Left
+ *  1: Right
+ */
 dir = 1;
+
+/**
+ * Check when we're changing direction to keep the camera still
+ */
 is_changingdir = false;
+changedir_limit = 48; // Amount we can move in the other direction before the camera starts moving
 changedir_pos = 0;
 
+/**
+ * Check if we're on a slope
+ * -1: Left facing slope
+ *  1: Right facing slope
+ */
 is_onslope = 0;
-
 
 /**
  * Check if we're against a wall
