@@ -6,9 +6,8 @@ if (global.debug) {
 	draw_text(5, 45, "wallslide: " + string(oPlayer.is_wallslide));
 	draw_text(5, 65, "jump: " + string(oPlayer.is_jump));
 	draw_text(5, 85, "groundpound: " + string(oPlayer.is_groundpound));
-	draw_text(5, 105, "crouch: " + string(oPlayer.is_crouch));
-	draw_text(5, 125, "hsp: " + string(oPlayer.hsp));
-	draw_text(5, 145, "vsp: " + string(oPlayer.vsp));
-	draw_text(5, 165, "onslope: " + string(oPlayer.is_onslope));
+	draw_text(5, 105, "hsp: " + string(oPlayer.hsp));
+	draw_text(5, 125, "vsp: " + string(oPlayer.vsp));
+	draw_text(5, 145, "hp: " + string(global.hp));
 }
 

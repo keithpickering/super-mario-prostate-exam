@@ -39,5 +39,12 @@ if (instance_exists(follow)) {
 x += (x_to - x) / cam_pan;
 y += (y_to - y) / cam_pan;
 
+if (is_shake) {
+	var angle = random_range(-0.5,0.5)
+    camera_set_view_angle(global.cam, angle);
+} else {
+	camera_set_view_angle(global.cam,0);
+}
+
 
 camera_set_view_pos(global.cam, x - view_w_half, y - view_h_half);

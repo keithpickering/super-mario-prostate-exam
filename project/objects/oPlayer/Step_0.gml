@@ -114,6 +114,11 @@ if (is_onfloor) {
 	
 	// Complete a ground pound
 	if (is_groundpound) {
+		// Shake the camera
+		oCamera.is_shake = true;
+		oCamera.alarm[0] = 5;
+		
+		// Stay stuck on the ground for a sec
 		move = 0;
 		timer_groundpound_done += 1;
 		if (timer_groundpound_done >= 20) {
@@ -128,6 +133,14 @@ if (is_onfloor) {
 		} else {
 			is_crouch = 0;
 		}
+		
+		// Fall damage
+		/*if (y - yprevious >= vsp_max) {
+			// Shake the camera
+			oCamera.is_shake = true;
+			oCamera.alarm[0] = 5;
+			scReduceHp();
+		}*/
 	}
 	
 	if (is_onslope != 0) {
@@ -143,6 +156,17 @@ if (is_onfloor) {
 		vsp /= 1.5;	
 	}
 	
+	if (is_wallslide != 0) {
+		// Allow jumping away from the wall
+		if (key_jump_pressed) {
+			vsp = -jump_max / 1.1;
+			// Jump in the correct direction
+			hsp += walljump_force * is_onwall * -1;
+			// Update vars
+			is_wallslide = 0;
+			is_jump = 3;
+		}
+	}
 	if (is_onwall != 0) {
 		if (vsp > 0) {
 			if (!is_wallslide) {
@@ -160,20 +184,6 @@ if (is_onfloor) {
 			timer_wallslide += 1;
 			if (timer_wallslide < 20){
 				move = 0;
-			}
-			
-			// Increase vertical speed as we slide down
-			//vsp *= 1.05;
-			//if (vsp > wallslidesp) vsp = wallslidesp;
-	
-			// Allow jumping away from the wall
-			if (key_jump_pressed) {
-				vsp = -jump_max / 1.1;
-				// Jump in the correct direction
-				hsp += walljump_force * is_onwall * -1;
-				// Update vars
-				is_wallslide = 0;
-				is_jump = 3;
 			}
 		}
 	} else {
