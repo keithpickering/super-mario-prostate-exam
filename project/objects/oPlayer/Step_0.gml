@@ -22,7 +22,12 @@ if (place_meeting(x + 1, y, oWall)) {
 
 // Check if we're on the floor
 is_onfloor = place_meeting(x, y + 1, oWall);
-
+is_onslope = 0;
+if (place_meeting(x + 1, y + 1, oSlope)) {
+	is_onslope = -1;
+} else if (place_meeting(x - 1, y + 1, oSlope)) {
+	is_onslope = 1;
+}
 
 
 // Calculate movement direction
@@ -107,21 +112,28 @@ if (is_onfloor) {
 		}
 	}
 	
-	is_groundpound = 0;
-	
 	// Complete a ground pound
-	/*if (is_groundpound) {
+	if (is_groundpound) {
 		move = 0;
 		timer_groundpound_done += 1;
 		if (timer_groundpound_done >= 20) {
 			is_groundpound = 0;
 			timer_groundpound_done = 0;
 		}
-	} else*/ if (key_crouch) {
-		is_crouch = 1;
-		move = 0;
 	} else {
-		is_crouch = 0;
+		timer_groundpound_done = 0;
+		if (key_crouch) {
+			is_crouch = 1;
+			move = 0;
+		} else {
+			is_crouch = 0;
+		}
+	}
+	
+	if (is_onslope != 0) {
+		if (is_crouch) {
+			move = is_onslope;
+		}
 	}
 } else {
 	// Check if jump key has been released while still moving up,
@@ -196,7 +208,7 @@ if (is_onfloor) {
 switch (move) {
 	case 1:
 		// Move right
-		if (!is_wallslide) || (is_onwall != 1) {
+		if (!is_wallslide) {
 			if (is_jump != 2) {
 				if (dir != 1) {
 					is_changingdir = true;
@@ -210,7 +222,7 @@ switch (move) {
 		break;
 	case -1:
 		// Move left
-		if (!is_wallslide || is_onwall != -1) {
+		if (!is_wallslide) {
 			if (is_jump != 2) {
 				if (dir != -1) {
 					is_changingdir = true;
@@ -294,7 +306,7 @@ if (place_meeting(x, y + vsp, oWall)) {
 		y += sign(vsp);
 	}
 	vsp = 0;
-} else if (abs(hsp) > walksp) {
+} else if (abs(hsp) > walksp*1.2) {
 	// Threshold for running across gaps
 	if (place_meeting(x + 48, y + sign(vsp), oWall)) {
 		vsp = 0;
@@ -375,7 +387,13 @@ if (!is_onfloor) && (!is_groundpound) {
 	} else {
 		// Todo: pushing animation
 		// Idling
-		sprite_index = sPlayerIdle;
+		if (sprite_index == sPlayerRun) {
+			if (floor(image_index) < 6) {
+				sprite_index = sPlayerIdle;
+			}
+		} else {
+			sprite_index = sPlayerIdle;
+		}
 	}
 	
 	if (!key_left) && (!key_right) {
@@ -406,7 +424,7 @@ if (key_crouch) {
 		}
 	}
 }
-if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19) {
+if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19 && !key_crouch) {
 	sprite_index = sPlayerCrouch;
 	image_speed = 0;
 	image_index = 1;
@@ -423,11 +441,13 @@ if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19) {
 		sprite_index = sPlayerCrouch;
 		image_speed = 0;
 		render_angle = 0;
-		if (yprevious + 2 != y) {
-			image_index = 3;
-		} else {
-			image_index = 2;
-		}
+		image_index = 3;
+	}
+} else {
+	if (draw_yscale < 0.9) && (move == 0 ) {
+		sprite_index = sPlayerIdle;
+		image_index = 16;
+		image_speed = 0;
 	}
 }
 
@@ -435,16 +455,19 @@ if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19) {
 draw_xscale = dir;
 
 // Stretch & Squash during jump
-if (key_jump_pressed) {
-	draw_yscale = 1.25;
-	draw_xscale = 0.75 * dir;
+if (key_jump_pressed) && (is_onfloor || is_onwall != 0) {
+	draw_yscale = 1.3;
+	draw_xscale = 0.25 * dir;
+} else if (timer_groundpound > 25) {
+	draw_yscale = 1 + (timer_groundpound / 50);
+	draw_xscale = 0.65 * dir;
 }
 
 draw_xscale = lerp(draw_xscale, dir, 0.1);
 draw_yscale = lerp(draw_yscale, 1, 0.1);
 
 if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
-	draw_yscale = 0.75;
+	draw_yscale = 0.8;
 	draw_xscale = 1.25 * dir;
 }
 

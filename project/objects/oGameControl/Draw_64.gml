@@ -9,6 +9,6 @@ if (global.debug) {
 	draw_text(5, 105, "crouch: " + string(oPlayer.is_crouch));
 	draw_text(5, 125, "hsp: " + string(oPlayer.hsp));
 	draw_text(5, 145, "vsp: " + string(oPlayer.vsp));
-	draw_text(5, 165, "y correct: " + string(oPlayer.y_correct));
+	draw_text(5, 165, "onslope: " + string(oPlayer.is_onslope));
 }
 

@@ -1,6 +1,6 @@
 hsp = 0;
 vsp = 0;
-vsp_max = 30;
+vsp_max = 20;
 grv = 0.6;
 frc = 0.5;
 walksp = 5;
@@ -23,6 +23,8 @@ sideflip_force = 3.5;
 dir = 1;
 is_changingdir = false;
 changedir_pos = 0;
+
+is_onslope = 0;
 
 
 /**
