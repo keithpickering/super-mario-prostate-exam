@@ -77,12 +77,9 @@ is_groundpound = 0;
 is_jump = 0;
 
 /**
- * Variables to handle running (could be visualized with a P-meter)
+ * Toggle invincibility
  */
-run_arr = [5,6,7,8,9,10];
-run_level = 1;
-
-
+is_invincible = false;
 
 
 
@@ -98,3 +95,5 @@ timer_groundpound_done = 0;
 timer_sideflip = 0;
 timer_wallslide = 0;
 timer_run = 0;
+timer_showhp = 0;
+timer_falldamage = 0;

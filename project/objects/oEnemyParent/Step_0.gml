@@ -11,17 +11,24 @@ if (place_meeting(x + 1, y, oWall)) {
 	is_onwall = 0;
 }
 
-// Check if on the floor
+// Check if we're on the floor
 is_onfloor = place_meeting(x, y + 1, oWall);
+is_onslope = 0;
+if (place_meeting(x + 2, y + 1, oSlope)) {
+	is_onslope = -1;
+} else if (place_meeting(x - 2, y + 1, oSlope)) {
+	is_onslope = 1;
+}
 
 // Determine max horizontal speed
 var hsp_max = move * walksp;
 var this_accel = accel;
 var this_decel = decel;
 
-if (is_onwall == 1) {
+// Turn around when we hit a wall
+if (is_onwall == 1) && (is_onslope == 0) {
 	move = -1;
-} else if (is_onwall == -1) {
+} else if (is_onwall == -1) && (is_onslope == 0) {
 	move = 1;
 }
 
@@ -63,27 +70,15 @@ vsp = vsp + grv;
  */
 if (vsp > vsp_max) vsp = vsp_max;
 
-/**
- * HORIZONTAL COLLISION
- */
-if (place_meeting(x + hsp, y, oWall)) {
-	while (!place_meeting(x + sign(hsp), y, oWall)) {
-		x += sign(hsp);
-	}
-	hsp = 0;
-}
-x += hsp;
 
 /**
- * VERTICAL COLLISION
+ * COLLISION
  */
-if (place_meeting(x, y + vsp, oWall)) {
-	while (!place_meeting(x, y + sign(vsp), oWall)) {
-		y += sign(vsp);
-	}
-	vsp = 0;
-}
-y += vsp;
+var collision_data = scCollision(x,y,hsp,vsp);
+x = collision_data[0];
+y = collision_data[1];
+hsp = collision_data[2];
+vsp = collision_data[3];
 
 
 // Flip sprite based on direction

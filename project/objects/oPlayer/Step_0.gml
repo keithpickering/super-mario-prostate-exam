@@ -91,6 +91,25 @@ if (is_onfloor) {
 	timer_groundpound = 0;
 	timer_wallslide = 0;
 	
+	// Show power meter if we stand still
+	if (abs(hsp) == 0) {
+		timer_showhp += 1;
+		if (timer_showhp >= 2*room_speed) {
+			global.show_hp = true;
+		}
+	} else if (is_invincible) {
+		// Show the meter immediately when we get hurt
+		timer_showhp = 0;
+		global.show_hp = true;
+	} else {
+		timer_showhp = 0;
+		global.show_hp = false;
+	}
+	
+	// Fall damage
+	if (timer_falldamage >= 100) scReduceHp();
+	timer_falldamage = 0;
+	
 	// Jumping
 	if (key_jump_pressed) {
 		if ((hsp < 0 && key_right) || (hsp > 0 && key_left)) && (move != 0) {
@@ -150,6 +169,12 @@ if (is_onfloor) {
 		}
 	}
 } else {
+	if (is_onwall == 0) && (!is_groundpound) {
+		timer_falldamage += 1;
+	} else {
+		timer_falldamage = 0;
+	}
+	
 	// Check if jump key has been released while still moving up,
 	// and if so prevent from jumping to the maximum height
 	if (!key_jump) && (sign(vsp) == -1) {
@@ -230,6 +255,7 @@ switch (move) {
 		}
 		hsp += this_accel;
 		if (hsp > hsp_max) hsp = hsp_max;
+		
 		break;
 	case -1:
 		// Move left
@@ -245,6 +271,7 @@ switch (move) {
 		if (sign(hsp) == 1) is_changingdir = true;
 		hsp -= this_accel;
 		if (hsp < hsp_max) hsp = hsp_max;
+		
 		break;
 	case 0:
 		// Movement ended - decelerate to stop
@@ -255,6 +282,7 @@ switch (move) {
 		} else if (hsp > -this_decel) && (hsp < this_decel) {
 			hsp = 0;
 		}
+		
 		break;
 }
 if (is_changingdir) {
@@ -280,81 +308,42 @@ if (vsp > vsp_max) vsp = vsp_max;
 
 
 /**
- * HORIZONTAL COLLISION
+ * ENEMY INTERACTIONS
  */
-
-if (place_meeting(x+hsp,y,oWall)){
-    // Up slope
-	var yplus = 0;
-    while (place_meeting(x + hsp, y - yplus, oWall)) && (yplus <= abs(hsp)) {
-		yplus += 1;
-	}
-	
-    if (place_meeting(x + hsp, y - yplus, oWall)){
-        while (!place_meeting(x + sign(hsp), y, oWall)) {
-			x += sign(hsp);
+var this_enemy = instance_place(x, y, oEnemyParent);
+if (this_enemy != noone) {
+	if (vsp > 0) && (!is_onfloor) {
+		// If we're moving down, stomp the enemy
+		with (this_enemy) {
+			// Destroy enemy
+			instance_destroy();
 		}
-        hsp = 0;
-    } else {
-        y -= yplus;
-    }
-}
-x += hsp;
-
-// Down slope
-if (!place_meeting(x, y, oWall)) && (vsp >= 0) && (place_meeting(x, y+2+abs(hsp), oWall)) {
-    while (!place_meeting(x, y + 1, oWall)) {
-		y += 1;
+		
+		// Bounce
+		vsp -= jump_max*2;
+	} else if (!is_invincible) {
+		// Get hurt
+		scReduceHp();
+		
+		// Bounce back a bit
+		vsp -= jump_max;
+		if (sign(this_enemy.hsp) == sign(dir)) {
+			hsp += 6 * dir;
+		} else {
+			hsp += 6 * sign(this_enemy.hsp);
+		}
 	}
 }
+
 
 /**
- * VERTICAL COLLISION
+ * COLLISION
  */
-
-if (place_meeting(x, y + vsp, oWall)) {
-	while (!place_meeting(x, y + sign(vsp), oWall)) {
-		y += sign(vsp);
-	}
-	vsp = 0;
-} else if (abs(hsp) > walksp*1.2) {
-	// Threshold for running across gaps
-	if (place_meeting(x + 48, y + sign(vsp), oWall)) {
-		vsp = 0;
-	}
-}
-y += vsp;
-
-
-// Vertical
-/*repeat(abs(vsp)) {
-    if (!place_meeting(x, y + sign(vsp), oWall)) {
-        y += sign(vsp); 
-	} else {
-        vsp = 0;
-        break;
-    }
-}
-
-// Horizontal
-repeat(abs(hsp)) {
-	// Move up slope
-    if (place_meeting(x + sign(hsp), y, oWall) && !place_meeting(x + sign(hsp), y - 1, oWall))
-        --y;
-    
-    // Move down slope
-    if (!place_meeting(x + sign(hsp), y, oWall) && !place_meeting(x + sign(hsp), y + 1, oWall) && place_meeting(x + sign(hsp), y + 2, oWall))
-        ++y; 
-
-    if (!place_meeting(x + sign(hsp), y, oWall)) {
-        x += sign(hsp); 
-	} else {
-        hsp = 0;
-        break;
-    }
-}*/
-
-
+var collision_data = scCollision(x,y,hsp,vsp);
+x = collision_data[0];
+y = collision_data[1];
+hsp = collision_data[2];
+vsp = collision_data[3];
 
 
 /**
@@ -486,9 +475,17 @@ draw_yscale = lerp(draw_yscale, 1, 0.1);
 
 // Squash on landing
 if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
-	draw_yscale = 0.75;
 	draw_xscale = 1.25 * dir;
+	var y_amt = vsp / 10;
+	if (y_amt < 0.75) y_amt = 0.75;
+	draw_yscale = y_amt;
 }
 
 // Adjust y position (visual only)
 y_correct = (sprite_height - (sprite_height*draw_yscale)) / 2;
+
+if (is_invincible) {
+	image_alpha = 0.5;
+} else {
+	image_alpha = 1;
+}

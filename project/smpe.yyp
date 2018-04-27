@@ -723,6 +723,25 @@
             }
         },
         {
+            "Key": "a8280b9a-1fa6-497a-b496-36e4c99bbc29",
+            "Value": {
+                "id": "f2b9a8da-ea25-410f-9c44-dbca70acd7fd",
+                "modelName": "GMResourceInfo",
+                "mvc": "1.0",
+                "configDeltaFiles": [
+                    
+                ],
+                "configDeltas": [
+                    
+                ],
+                "resourceCreationConfigs": [
+                    "default"
+                ],
+                "resourcePath": "scripts\/scCollision\/scCollision.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "aac2ddf1-5ba1-4c18-9751-a4d1d9e9b7f1",
             "Value": {
                 "id": "31525edc-e71d-4b68-ae06-5d1913e1d571",
@@ -1104,7 +1123,8 @@
         }
     ],
     "script_order": [
-        "252bcc1d-8180-4e8e-a26f-3e5dd1d90ae8"
+        "252bcc1d-8180-4e8e-a26f-3e5dd1d90ae8",
+        "a8280b9a-1fa6-497a-b496-36e4c99bbc29"
     ],
     "tutorial": ""
 }
