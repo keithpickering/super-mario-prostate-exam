@@ -14,5 +14,5 @@ if (!oPlayer.is_invincible) {
 
 	// Make player invincible temporarily
 	oPlayer.is_invincible = true;
-	oPlayer.alarm[0] = 1 * room_speed;
+	oPlayer.alarm[0] = 2 * room_speed;
 }

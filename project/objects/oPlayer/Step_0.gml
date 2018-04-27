@@ -94,7 +94,7 @@ if (is_onfloor) {
 	// Show power meter if we stand still
 	if (abs(hsp) == 0) {
 		timer_showhp += 1;
-		if (timer_showhp >= 2*room_speed) {
+		if (timer_showhp >= room_speed) {
 			global.show_hp = true;
 		}
 	} else if (is_invincible) || (global.hp == 1) {
@@ -152,14 +152,6 @@ if (is_onfloor) {
 		} else {
 			is_crouch = 0;
 		}
-		
-		// Fall damage
-		/*if (y - yprevious >= vsp_max) {
-			// Shake the camera
-			oCamera.is_shake = true;
-			oCamera.alarm[0] = 5;
-			scReduceHp();
-		}*/
 	}
 	
 	if (is_onslope != 0) {
@@ -169,8 +161,9 @@ if (is_onfloor) {
 		}
 	}
 } else {
+	// Increment fall damage counter
 	if (is_onwall == 0) && (!is_groundpound) {
-		timer_falldamage += 1;
+		timer_falldamage++;
 	} else {
 		timer_falldamage = 0;
 	}
@@ -319,18 +312,21 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 			is_dead = true;
 		}
 		
-		// Bounce
-		vsp -= jump_max*2;
+		// Bounce off enemy
+		vsp = -jump_max;
+		
+		// Reset the fall damage timer
+		timer_falldamage = 0;
 	} else if (!is_invincible) {
 		// Get hurt
 		scReduceHp();
 		
 		// Bounce back a bit
-		vsp -= jump_max;
-		if (sign(this_enemy.hsp) == sign(dir)) {
-			hsp = 6 * dir;
+		if (this_enemy.is_onfloor) vsp = -jump_max/2;
+		if (sign(this_enemy.hsp) == sign(hsp)) {
+			hsp = -7 * sign(this_enemy.hsp);
 		} else {
-			hsp = 6 * sign(this_enemy.hsp);
+			hsp = 7 * sign(this_enemy.hsp);
 		}
 	}
 }

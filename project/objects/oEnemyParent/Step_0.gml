@@ -2,64 +2,67 @@
  * SETUP
  */
  
-if (is_dead) return false;
- 
-// Check if against a wall
-if (place_meeting(x + 1, y, oWall)) {
-	is_onwall = 1;
-} else if (place_meeting(x - 1, y, oWall)) {
-	is_onwall = -1;
+if (!is_dead) {
+	// Check if against a wall
+	if (place_meeting(x + 1, y, oWall)) {
+		is_onwall = 1;
+	} else if (place_meeting(x - 1, y, oWall)) {
+		is_onwall = -1;
+	} else {
+		is_onwall = 0;
+	}
+
+	// Check if we're on the floor
+	is_onfloor = place_meeting(x, y + 1, oWall);
+	is_onslope = 0;
+	if (place_meeting(x + 2, y + 1, oSlope)) {
+		is_onslope = -1;
+	} else if (place_meeting(x - 2, y + 1, oSlope)) {
+		is_onslope = 1;
+	}
+
+	// Determine max horizontal speed
+	var hsp_max = move * walksp;
+	var this_accel = accel;
+	var this_decel = decel;
+
+	// Turn around when we hit a wall
+	if (is_onwall == 1) && (is_onslope == 0) {
+		move = -1;
+	} else if (is_onwall == -1) && (is_onslope == 0) {
+		move = 1;
+	}
+
+	/**
+	 * HORIZONTAL MOVEMENT + EASING
+	 */
+	switch (move) {
+		case 1:
+			// Move right
+			dir = 1;
+			hsp += this_accel;
+			if (hsp > hsp_max) hsp = hsp_max;
+			break;
+		case -1:
+			// Move left
+			dir = -1;
+			hsp -= this_accel;
+			if (hsp < hsp_max) hsp = hsp_max;
+			break;
+		case 0:
+			// Movement ended - decelerate to stop
+			if (hsp >= this_decel) {
+				hsp -= this_decel;
+			} else if (hsp <= -this_decel) {
+				hsp += this_decel;
+			} else if (hsp > -this_decel) && (hsp < this_decel) {
+				hsp = 0;
+			}
+			break;
+	}
 } else {
-	is_onwall = 0;
-}
-
-// Check if we're on the floor
-is_onfloor = place_meeting(x, y + 1, oWall);
-is_onslope = 0;
-if (place_meeting(x + 2, y + 1, oSlope)) {
-	is_onslope = -1;
-} else if (place_meeting(x - 2, y + 1, oSlope)) {
-	is_onslope = 1;
-}
-
-// Determine max horizontal speed
-var hsp_max = move * walksp;
-var this_accel = accel;
-var this_decel = decel;
-
-// Turn around when we hit a wall
-if (is_onwall == 1) && (is_onslope == 0) {
-	move = -1;
-} else if (is_onwall == -1) && (is_onslope == 0) {
-	move = 1;
-}
-
-/**
- * HORIZONTAL MOVEMENT + EASING
- */
-switch (move) {
-	case 1:
-		// Move right
-		dir = 1;
-		hsp += this_accel;
-		if (hsp > hsp_max) hsp = hsp_max;
-		break;
-	case -1:
-		// Move left
-		dir = -1;
-		hsp -= this_accel;
-		if (hsp < hsp_max) hsp = hsp_max;
-		break;
-	case 0:
-		// Movement ended - decelerate to stop
-		if (hsp >= this_decel) {
-			hsp -= this_decel;
-		} else if (hsp <= -this_decel) {
-			hsp += this_decel;
-		} else if (hsp > -this_decel) && (hsp < this_decel) {
-			hsp = 0;
-		}
-		break;
+	// We dead, don't move
+	hsp = 0;
 }
 
 /**

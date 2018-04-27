@@ -13,12 +13,9 @@ if (global.debug) {
 }
 
 // Draw power meter
-var pmh = sprite_get_height(sPowerMeter);
 if (global.show_hp) || (pmy > -pmh) {
-	var pmw = sprite_get_width(sPowerMeter);
-	var pmx = x + (camera_get_view_width(global.cam)/2 - pmw);
-	var y_final = (global.show_hp) ? y + 10 : -pmh;
-	pmy = lerp(pmy, y_final, 0.1);
+	var y_final = (global.show_hp) ? pmh+10 : -pmh;
+	pmy = lerp(pmy, y_final, 0.05);
 	
 	var scale_target = 1;
 	if (global.hp == 1) {
@@ -28,13 +25,13 @@ if (global.show_hp) || (pmy > -pmh) {
 		} else {
 			timer_pm_pulse += 1;
 			if (timer_pm_pulse > 10) {
-				scale_target = 1.15;
+				scale_target = 1.1;
 			} else {
 				scale_target = 0.75;
 			}
 		}
 	}
-	//pm_scale = lerp(pm_scale, scale_target, 0.1);
+	pm_scale = lerp(pm_scale, scale_target, 0.1);
 	
-	draw_sprite_part_ext(sPowerMeter, global.hp, 0, 0, pmw, pmh, pmx, pmy, pm_scale, pm_scale, c_white, 1);
-}
+	draw_sprite_ext(sPowerMeter, global.hp, pmx, pmy, pm_scale, pm_scale, 0, c_white, 1);
+} 

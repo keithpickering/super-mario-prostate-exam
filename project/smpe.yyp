@@ -438,25 +438,6 @@
             }
         },
         {
-            "Key": "755a881c-006f-44cb-b880-a23f3568bcf2",
-            "Value": {
-                "id": "0d48e4fa-ab99-4309-9b4b-3f6bdd3c0d77",
-                "modelName": "GMResourceInfo",
-                "mvc": "1.0",
-                "configDeltaFiles": [
-                    
-                ],
-                "configDeltas": [
-                    
-                ],
-                "resourceCreationConfigs": [
-                    "default"
-                ],
-                "resourcePath": "objects\/oPowerMeter\/oPowerMeter.yy",
-                "resourceType": "GMObject"
-            }
-        },
-        {
             "Key": "762cb46f-36c7-4acd-8380-9835102bf678",
             "Value": {
                 "id": "d72e734a-6905-49bd-8a61-818333742d35",
@@ -757,25 +738,6 @@
                     "default"
                 ],
                 "resourcePath": "objects\/oSlope45L\/oSlope45L.yy",
-                "resourceType": "GMObject"
-            }
-        },
-        {
-            "Key": "abcec9d6-f015-4b7a-aa93-8eedd2102063",
-            "Value": {
-                "id": "e2579930-8cb3-4ea4-83be-0fbe87353910",
-                "modelName": "GMResourceInfo",
-                "mvc": "1.0",
-                "configDeltaFiles": [
-                    
-                ],
-                "configDeltas": [
-                    
-                ],
-                "resourceCreationConfigs": [
-                    "default"
-                ],
-                "resourcePath": "objects\/oHud\/oHud.yy",
                 "resourceType": "GMObject"
             }
         },
@@ -1139,10 +1101,30 @@
                 "resourcePath": "views\/fab0382d-d268-4ed4-9f1f-229817ad74a5.yy",
                 "resourceType": "GMFolder"
             }
+        },
+        {
+            "Key": "fdc6af03-70da-4e03-afbd-8ccee3a3bd03",
+            "Value": {
+                "id": "7b3de596-6361-4a09-ad2a-bf3448caf77f",
+                "modelName": "GMResourceInfo",
+                "mvc": "1.0",
+                "configDeltaFiles": [
+                    
+                ],
+                "configDeltas": [
+                    
+                ],
+                "resourceCreationConfigs": [
+                    "default"
+                ],
+                "resourcePath": "scripts\/scRestoreHp\/scRestoreHp.yy",
+                "resourceType": "GMScript"
+            }
         }
     ],
     "script_order": [
         "252bcc1d-8180-4e8e-a26f-3e5dd1d90ae8",
+        "fdc6af03-70da-4e03-afbd-8ccee3a3bd03",
         "a8280b9a-1fa6-497a-b496-36e4c99bbc29"
     ],
     "tutorial": ""
