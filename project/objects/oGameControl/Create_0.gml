@@ -4,7 +4,12 @@ global.hp = 3;
 
 global.show_hp = false;
 
+timer_cleanup = 0;
+
+timer_pm_pulse = 0;
+
 pmy = sprite_get_height(sPowerMeter) * -1;
+pm_scale = 1;
 
 // Create the camera if it doesn't exist
 if (!instance_exists(oCamera)) && (instance_exists(oPlayer)) {

@@ -12,6 +12,8 @@ move = -1;
 // Status variables
 dir = move;
 
+is_dead = false;
+
 /**
  * Check if against a wall
  * -1: Left wall

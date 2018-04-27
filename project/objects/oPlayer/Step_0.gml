@@ -97,7 +97,7 @@ if (is_onfloor) {
 		if (timer_showhp >= 2*room_speed) {
 			global.show_hp = true;
 		}
-	} else if (is_invincible) {
+	} else if (is_invincible) || (global.hp == 1) {
 		// Show the meter immediately when we get hurt
 		timer_showhp = 0;
 		global.show_hp = true;
@@ -311,12 +311,12 @@ if (vsp > vsp_max) vsp = vsp_max;
  * ENEMY INTERACTIONS
  */
 var this_enemy = instance_place(x, y, oEnemyParent);
-if (this_enemy != noone) {
+if (this_enemy != noone) && (!this_enemy.is_dead) {
 	if (vsp > 0) && (!is_onfloor) {
 		// If we're moving down, stomp the enemy
 		with (this_enemy) {
-			// Destroy enemy
-			instance_destroy();
+			sprite_index = sEnemyDead;
+			is_dead = true;
 		}
 		
 		// Bounce
@@ -328,9 +328,9 @@ if (this_enemy != noone) {
 		// Bounce back a bit
 		vsp -= jump_max;
 		if (sign(this_enemy.hsp) == sign(dir)) {
-			hsp += 6 * dir;
+			hsp = 6 * dir;
 		} else {
-			hsp += 6 * sign(this_enemy.hsp);
+			hsp = 6 * sign(this_enemy.hsp);
 		}
 	}
 }
@@ -476,8 +476,12 @@ draw_yscale = lerp(draw_yscale, 1, 0.1);
 // Squash on landing
 if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
 	draw_xscale = 1.25 * dir;
-	var y_amt = vsp / 10;
-	if (y_amt < 0.75) y_amt = 0.75;
+	var y_amt = vsp / 9;
+	if (y_amt < 0.75) {
+		y_amt = 0.75;
+	} else if (y_amt > 0.9) {
+		y_amt = 0.9;
+	}
 	draw_yscale = y_amt;
 }
 

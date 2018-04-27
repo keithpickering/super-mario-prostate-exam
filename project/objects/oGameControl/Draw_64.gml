@@ -19,5 +19,22 @@ if (global.show_hp) || (pmy > -pmh) {
 	var pmx = x + (camera_get_view_width(global.cam)/2 - pmw);
 	var y_final = (global.show_hp) ? y + 10 : -pmh;
 	pmy = lerp(pmy, y_final, 0.1);
-	draw_sprite_part(sPowerMeter, global.hp, 0, 0, pmw, pmh, pmx, pmy);
+	
+	var scale_target = 1;
+	if (global.hp == 1) {
+		if (timer_pm_pulse > 50) {
+			timer_pm_pulse = 0;
+			scale_target = 1;
+		} else {
+			timer_pm_pulse += 1;
+			if (timer_pm_pulse > 10) {
+				scale_target = 1.15;
+			} else {
+				scale_target = 0.75;
+			}
+		}
+	}
+	//pm_scale = lerp(pm_scale, scale_target, 0.1);
+	
+	draw_sprite_part_ext(sPowerMeter, global.hp, 0, 0, pmw, pmh, pmx, pmy, pm_scale, pm_scale, c_white, 1);
 }

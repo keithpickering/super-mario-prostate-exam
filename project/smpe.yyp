@@ -818,6 +818,25 @@
             }
         },
         {
+            "Key": "be110a43-6395-4d56-9109-adf245bed3f2",
+            "Value": {
+                "id": "733de3d1-2fa9-475f-b484-6a1aeb5aae32",
+                "modelName": "GMResourceInfo",
+                "mvc": "1.0",
+                "configDeltaFiles": [
+                    
+                ],
+                "configDeltas": [
+                    
+                ],
+                "resourceCreationConfigs": [
+                    "default"
+                ],
+                "resourcePath": "sprites\/sEnemyDead\/sEnemyDead.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
             "Key": "c3d7cb50-4f42-4e03-a55a-246c56678b03",
             "Value": {
                 "id": "de387137-fab8-4446-bfa7-01071be9ef9f",

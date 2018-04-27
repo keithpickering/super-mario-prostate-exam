@@ -2,6 +2,8 @@
  * SETUP
  */
  
+if (is_dead) return false;
+ 
 // Check if against a wall
 if (place_meeting(x + 1, y, oWall)) {
 	is_onwall = 1;
