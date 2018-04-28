@@ -191,6 +191,25 @@
             }
         },
         {
+            "Key": "2814ed59-4131-4f23-ad5c-ae3065b3a223",
+            "Value": {
+                "id": "c3690c6e-8a5f-4519-b2d6-2863cbac5f19",
+                "modelName": "GMResourceInfo",
+                "mvc": "1.0",
+                "configDeltaFiles": [
+                    
+                ],
+                "configDeltas": [
+                    
+                ],
+                "resourceCreationConfigs": [
+                    "default"
+                ],
+                "resourcePath": "scripts\/EaseInOutBack\/EaseInOutBack.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "309e34fb-a1ca-4d02-aea0-aba55659c843",
             "Value": {
                 "id": "782d999f-d823-49b6-a4e9-8d83f5a7dab4",
@@ -1125,7 +1144,8 @@
     "script_order": [
         "252bcc1d-8180-4e8e-a26f-3e5dd1d90ae8",
         "fdc6af03-70da-4e03-afbd-8ccee3a3bd03",
-        "a8280b9a-1fa6-497a-b496-36e4c99bbc29"
+        "a8280b9a-1fa6-497a-b496-36e4c99bbc29",
+        "2814ed59-4131-4f23-ad5c-ae3065b3a223"
     ],
     "tutorial": ""
 }

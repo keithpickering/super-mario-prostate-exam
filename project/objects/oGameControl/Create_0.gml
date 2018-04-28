@@ -6,6 +6,7 @@ global.show_hp = true;
 
 timer_cleanup = 0;
 
+timer_pm_slide = 0;
 timer_pm_pulse = 0;
 
 // Create the camera if it doesn't exist
@@ -17,4 +18,6 @@ pmw = sprite_get_width(sPowerMeter);
 pmh = sprite_get_height(sPowerMeter);
 pmx = camera_get_view_width(global.cam) - pmw;
 pmy = -pmh;
+y_final = pmh+10;
 pm_scale = 1;
+pm_time = 50;

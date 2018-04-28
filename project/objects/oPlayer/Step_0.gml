@@ -94,7 +94,7 @@ if (is_onfloor) {
 	// Show power meter if we stand still
 	if (abs(hsp) == 0) {
 		timer_showhp += 1;
-		if (timer_showhp >= room_speed) {
+		if (timer_showhp >= room_speed/2) {
 			global.show_hp = true;
 		}
 	} else if (is_invincible) || (global.hp == 1) {

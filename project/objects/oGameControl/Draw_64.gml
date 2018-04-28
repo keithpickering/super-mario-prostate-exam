@@ -12,26 +12,40 @@ if (global.debug) {
 	draw_text(5, 165, "invincible: " + string(oPlayer.is_invincible));
 }
 
-// Draw power meter
-if (global.show_hp) || (pmy > -pmh) {
-	var y_final = (global.show_hp) ? pmh+10 : -pmh;
-	pmy = lerp(pmy, y_final, 0.05);
+/**
+ * POWER METER
+ */
+
+// Timer for sliding animation
+if (timer_pm_slide == pm_time) {
+	// If the timer is up, it's safe to update our start/end position values
+	timer_pm_slide = 0;
+	pmy = y_final;
+	y_final = (global.show_hp) ? pmh+10 : -pmh;
+} else {
+	// Increment timer
+	timer_pm_slide++;
+}
+
+// Calculate this frame's position
+var this_pmy = EaseInOutBack(timer_pm_slide, pmy, y_final-pmy, pm_time);
 	
-	var scale_target = 1;
-	if (global.hp == 1) {
-		if (timer_pm_pulse > 50) {
-			timer_pm_pulse = 0;
-			scale_target = 1;
+// Pulsating at 1HP
+var scale_target = 1;
+if (global.hp == 1) {
+	if (timer_pm_pulse > 50) {
+		timer_pm_pulse = 0;
+		scale_target = 1;
+	} else {
+		timer_pm_pulse += 1;
+		if (timer_pm_pulse > 10) {
+			scale_target = 1.1;
 		} else {
-			timer_pm_pulse += 1;
-			if (timer_pm_pulse > 10) {
-				scale_target = 1.1;
-			} else {
-				scale_target = 0.75;
-			}
+			scale_target = 0.75;
 		}
 	}
-	pm_scale = lerp(pm_scale, scale_target, 0.1);
-	
-	draw_sprite_ext(sPowerMeter, global.hp, pmx, pmy, pm_scale, pm_scale, 0, c_white, 1);
-} 
+}
+pm_scale = lerp(pm_scale, scale_target, 0.1);
+
+// Finally draw the meter
+draw_sprite_ext(sPowerMeter, global.hp, pmx, this_pmy, pm_scale, pm_scale, 0, c_white, 1);
