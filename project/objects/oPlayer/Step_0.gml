@@ -331,6 +331,19 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 	}
 }
 
+/**
+ * HEART ITEM
+ */
+var this_heart = instance_place(x, y, oHeart);
+if (this_heart != noone) {
+	scRestoreHp(1);
+	
+	// Destroy heart
+	with (this_heart) {
+		instance_destroy();	
+	}
+}
+
 
 /**
  * COLLISION

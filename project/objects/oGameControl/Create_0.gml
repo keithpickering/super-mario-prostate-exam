@@ -1,6 +1,7 @@
 // Global variables
 global.debug = true;
-global.hp = 3;
+global.hp_max = 3;
+global.hp = global.hp_max;
 
 global.show_hp = true;
 

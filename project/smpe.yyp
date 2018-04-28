@@ -552,6 +552,25 @@
             }
         },
         {
+            "Key": "81235474-a11a-4413-a926-8ce40c124cac",
+            "Value": {
+                "id": "a8edcdee-5e86-49b4-a46b-d3d27f6933db",
+                "modelName": "GMResourceInfo",
+                "mvc": "1.0",
+                "configDeltaFiles": [
+                    
+                ],
+                "configDeltas": [
+                    
+                ],
+                "resourceCreationConfigs": [
+                    "default"
+                ],
+                "resourcePath": "sprites\/sHeart\/sHeart.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
             "Key": "843a7903-e5f5-4ba9-8bd0-b5d6de7d1cd2",
             "Value": {
                 "id": "1b55d1aa-da19-4d4a-ba54-bec9f80f1fe0",
@@ -853,6 +872,25 @@
                 ],
                 "resourcePath": "sprites\/sWall22L1\/sWall22L1.yy",
                 "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "cb7ea12c-d89c-4835-b3a9-ae62bc480490",
+            "Value": {
+                "id": "3cfa20aa-b85d-4690-aae9-d1bde47ff96b",
+                "modelName": "GMResourceInfo",
+                "mvc": "1.0",
+                "configDeltaFiles": [
+                    
+                ],
+                "configDeltas": [
+                    
+                ],
+                "resourceCreationConfigs": [
+                    "default"
+                ],
+                "resourcePath": "objects\/oHeart\/oHeart.yy",
+                "resourceType": "GMObject"
             }
         },
         {

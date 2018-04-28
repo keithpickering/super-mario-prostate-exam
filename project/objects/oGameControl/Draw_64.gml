@@ -17,13 +17,12 @@ if (global.debug) {
  */
 
 // Timer for sliding animation
-if (timer_pm_slide == pm_time) {
-	// If the timer is up, it's safe to update our start/end position values
+if (timer_pm_slide == pm_time) || (pmy == y_final) {
+	// If the animation is done, it's safe to update our start/end position values
 	timer_pm_slide = 0;
 	pmy = y_final;
 	y_final = (global.show_hp) ? pmh+10 : -pmh;
 } else {
-	// Increment timer
 	timer_pm_slide++;
 }
 
