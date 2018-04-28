@@ -91,24 +91,29 @@ if (is_onfloor) {
 	timer_groundpound = 0;
 	timer_wallslide = 0;
 	
-	// Show power meter if we stand still
-	if (abs(hsp) == 0) {
+	// Show power meter if we stand still, just got hit, or are low on health
+	if (abs(hsp) == 0) || (is_invincible) || (global.hp == 1) {
 		timer_showhp += 1;
-		if (timer_showhp >= room_speed/2) {
+		timer_hidehp = 0;
+		if (abs(hsp == 0)) {
+			if (timer_showhp > 50) {
+				global.show_hp = true;
+			}
+		} else {
 			global.show_hp = true;
 		}
-	} else if (is_invincible) || (global.hp == 1) {
-		// Show the meter immediately when we get hurt
+	} else if (abs(hsp) > 0) {
+		// If we start running, hide the power meter after a bit
+		timer_hidehp += 1;
+		if (timer_hidehp > 20) {
+			global.show_hp = false;
+		}
 		timer_showhp = 0;
-		global.show_hp = true;
-	} else {
-		timer_showhp = 0;
-		global.show_hp = false;
 	}
 	
 	// Fall damage
-	if (timer_falldamage >= 100) scReduceHp();
-	timer_falldamage = 0;
+	//if (timer_falldamage >= 100) scReduceHp();
+	//timer_falldamage = 0;
 	
 	// Jumping
 	if (key_jump_pressed) {
@@ -162,11 +167,11 @@ if (is_onfloor) {
 	}
 } else {
 	// Increment fall damage counter
-	if (is_onwall == 0) && (!is_groundpound) {
+	/*if (is_onwall == 0) && (!is_groundpound) {
 		timer_falldamage++;
 	} else {
 		timer_falldamage = 0;
-	}
+	}*/
 	
 	// Check if jump key has been released while still moving up,
 	// and if so prevent from jumping to the maximum height
@@ -315,7 +320,7 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 		vsp = -jump_max;
 		
 		// Reset the fall damage timer
-		timer_falldamage = 0;
+		//timer_falldamage = 0;
 	} else if (!is_invincible) {
 		// Get hurt
 		scReduceHp();

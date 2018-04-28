@@ -96,4 +96,5 @@ timer_sideflip = 0;
 timer_wallslide = 0;
 timer_run = 0;
 timer_showhp = 0;
+timer_hidehp = 0;
 timer_falldamage = 0;
