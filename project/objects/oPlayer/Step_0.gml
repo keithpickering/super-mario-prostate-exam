@@ -308,7 +308,6 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 	if (vsp > 0) && (!is_onfloor) {
 		// If we're moving down, stomp the enemy
 		with (this_enemy) {
-			sprite_index = sEnemyDead;
 			is_dead = true;
 		}
 		

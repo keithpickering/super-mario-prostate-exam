@@ -2,7 +2,7 @@ hsp = 0;
 vsp = 0;
 vsp_max = 30;
 grv = 0.6;
-walksp = 2;
+walksp = 1;
 accel = 0.15;
 decel = 0.15;
 
