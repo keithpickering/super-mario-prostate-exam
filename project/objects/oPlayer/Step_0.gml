@@ -91,6 +91,12 @@ if (is_onfloor) {
 	timer_groundpound = 0;
 	timer_wallslide = 0;
 	
+	timer_jumpcancel++;
+	if (timer_jumpcancel > 20) {
+		timer_jumpcancel = 0;
+		jump_current = 0;
+	}
+	
 	// Show power meter if we stand still, just got hit, or are low on health
 	if (abs(hsp) == 0) || (is_invincible) || (global.hp == 1) {
 		timer_showhp += 1;
@@ -124,13 +130,26 @@ if (is_onfloor) {
 			is_jump = 2;
 		} else {
 			// Regular jump
+			var this_doublejump_multi = 1;
+			// Double/triple jump counter
+			if (timer_jumpcancel <= 20) {
+				jump_current++;
+				
+				if (jump_current == 2) {
+					this_doublejump_multi = 1.1;
+				} else if (jump_current == 3) {
+					if (abs(hsp) > 0) this_doublejump_multi = 1.2;
+				} else if (jump_current > 3) {
+					jump_current = 1;
+				}
+			}
 			// Jump higher the faster we're moving
 			var jump_multiplier = abs(hsp) / walksp;
 			if (jump_multiplier > 1) {
-				vsp = -jump_max * jump_multiplier;
+				vsp = -jump_max * jump_multiplier * this_doublejump_multi;
 				if (vsp < -jump_max_running) vsp = -jump_max_running;
 			} else {
-				vsp = -jump_max;
+				vsp = -jump_max * this_doublejump_multi;
 			}
 			is_jump = 1;
 		}
@@ -166,6 +185,8 @@ if (is_onfloor) {
 		}
 	}
 } else {
+	timer_jumpcancel = 0;
+
 	// Increment fall damage counter
 	/*if (is_onwall == 0) && (!is_groundpound) {
 		timer_falldamage++;
@@ -314,6 +335,7 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 		// If we're moving down, stomp the enemy
 		with (this_enemy) {
 			is_dead = true;
+			alarm[0] = room_speed;
 		}
 		
 		// Bounce off enemy

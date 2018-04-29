@@ -13,6 +13,7 @@ move = -1;
 dir = move;
 
 is_dead = false;
+is_turningaround = false;
 
 /**
  * Check if against a wall

@@ -31,6 +31,8 @@ if (!is_dead) {
 		move = -1;
 	} else if (is_onwall == -1) && (is_onslope == 0) {
 		move = 1;
+	} else {
+		
 	}
 
 	/**
@@ -75,6 +77,16 @@ vsp = vsp + grv;
  */
 if (vsp > vsp_max) vsp = vsp_max;
 
+// Turn around when we hit another enemy
+if (instance_place(x, y, oEnemyParent)) {
+	if (hsp < 0) {
+		move = 1;
+		x += 1;
+	} else if (hsp > 0) {
+		move = -1;
+		x -= 1;
+	}
+}
 
 /**
  * COLLISION

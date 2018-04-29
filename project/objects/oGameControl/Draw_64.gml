@@ -9,7 +9,8 @@ if (global.debug) {
 	draw_text(5, 105, "hsp: " + string(oPlayer.hsp));
 	draw_text(5, 125, "vsp: " + string(oPlayer.vsp));
 	draw_text(5, 145, "hp: " + string(global.hp));
-	draw_text(5, 165, "invincible: " + string(oPlayer.is_invincible));
+	draw_text(5, 165, "jump current: " + string(oPlayer.jump_current));
+	draw_text(5, 185, "jump cancel: " + string(oPlayer.timer_jumpcancel));
 }
 
 /**

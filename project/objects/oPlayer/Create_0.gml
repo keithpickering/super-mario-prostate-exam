@@ -17,6 +17,7 @@ decel = 0.15;
  */
 jump_max = 17;
 jump_max_running = 19;
+jump_current = 0; // For double/triple jump
 walljump_force = walksp;
 sideflip_force = 3.5;
 
@@ -98,3 +99,4 @@ timer_run = 0;
 timer_showhp = 0;
 timer_hidehp = 0;
 timer_falldamage = 0;
+timer_jumpcancel = 0;
