@@ -31,8 +31,12 @@ if (!is_dead) {
 		move = -1;
 	} else if (is_onwall == -1) && (is_onslope == 0) {
 		move = 1;
-	} else {
-		
+	}
+	
+	// Turn around when we hit another enemy
+	if (instance_place(x + hsp, y, oEnemyParent)) && (abs(hsp) > 0) {
+		hsp = 0;
+		move = -move;
 	}
 
 	/**
@@ -76,12 +80,6 @@ vsp = vsp + grv;
  * TERMINAL VELOCITY
  */
 if (vsp > vsp_max) vsp = vsp_max;
-
-// Turn around when we hit another enemy
-if (instance_place(x + hsp, y, oEnemyParent)) && (abs(hsp) > 0) {
-	hsp = 0;
-	move = -move;
-}
 
 
 /**
