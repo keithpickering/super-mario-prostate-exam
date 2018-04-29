@@ -5,7 +5,7 @@ if (!oPlayer.is_invincible) {
 
 	// Shake camera whenever we get hurt
 	oCamera.is_shake = true;
-	oCamera.alarm[0] = 15;
+	oCamera.alarm[0] = 30;
 
 	// TODO check if dead and handle that
 	if (global.hp == 0) {

@@ -78,15 +78,11 @@ vsp = vsp + grv;
 if (vsp > vsp_max) vsp = vsp_max;
 
 // Turn around when we hit another enemy
-if (instance_place(x, y, oEnemyParent)) {
-	if (hsp < 0) {
-		move = 1;
-		x += 1;
-	} else if (hsp > 0) {
-		move = -1;
-		x -= 1;
-	}
+if (instance_place(x + hsp, y, oEnemyParent)) && (abs(hsp) > 0) {
+	hsp = 0;
+	move = -move;
 }
+
 
 /**
  * COLLISION

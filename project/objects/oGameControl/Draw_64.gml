@@ -10,7 +10,7 @@ if (global.debug) {
 	draw_text(5, 125, "vsp: " + string(oPlayer.vsp));
 	draw_text(5, 145, "hp: " + string(global.hp));
 	draw_text(5, 165, "jump current: " + string(oPlayer.jump_current));
-	draw_text(5, 185, "jump cancel: " + string(oPlayer.timer_jumpcancel));
+	//draw_text(5, 185, "jump cancel: " + string(oPlayer.timer_jumpcancel));
 }
 
 /**

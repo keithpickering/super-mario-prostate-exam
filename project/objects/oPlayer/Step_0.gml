@@ -128,6 +128,8 @@ if (is_onfloor) {
 			vsp = -jump_max * 1.15;
 			hsp += move * sideflip_force;
 			is_jump = 2;
+			// Reset double/triple jump
+			jump_current = 1;
 		} else {
 			// Regular jump
 			var this_doublejump_multi = 1;
@@ -135,10 +137,16 @@ if (is_onfloor) {
 			if (timer_jumpcancel <= 20) {
 				jump_current++;
 				
+				// Double jump can be done while standing still,
+				// but Triple jump requires movement
 				if (jump_current == 2) {
 					this_doublejump_multi = 1.1;
 				} else if (jump_current == 3) {
-					if (abs(hsp) > 0) this_doublejump_multi = 1.2;
+					if (abs(hsp) > 0) && (move != 0) {
+						this_doublejump_multi = 1.2;
+					} else {
+						jump_current = 1;
+					}
 				} else if (jump_current > 3) {
 					jump_current = 1;
 				}
@@ -339,10 +347,15 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 		}
 		
 		// Bounce off enemy
-		vsp = -jump_max;
+		if (!is_groundpound) vsp = -jump_max;
 		
 		// Reset the fall damage timer
 		//timer_falldamage = 0;
+		
+		// Reset jump counter (can't bounce off an enemy and continue triple jump)
+		// Setting to 1 makes bouncing off the enemy act as the first jump, so you
+		// can kill an enemy then double jump next time you hit the ground
+		jump_current = 1;
 	} else if (!is_invincible) {
 		// Get hurt
 		scReduceHp();
@@ -350,9 +363,9 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 		// Bounce back a bit
 		if (this_enemy.is_onfloor) vsp = -jump_max/2;
 		if (sign(this_enemy.hsp) == sign(hsp)) {
-			hsp = -7 * sign(this_enemy.hsp);
+			hsp = -6 * sign(this_enemy.hsp);
 		} else {
-			hsp = 7 * sign(this_enemy.hsp);
+			hsp = 6 * sign(this_enemy.hsp);
 		}
 	}
 }
