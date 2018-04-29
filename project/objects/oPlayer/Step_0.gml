@@ -220,6 +220,8 @@ if (is_onfloor) {
 		}
 	}
 	if (is_onwall != 0) {
+		jump_current = 0;
+		
 		if (vsp > 0) {
 			if (!is_wallslide) {
 				// Hit the wall just now
@@ -313,6 +315,7 @@ switch (move) {
 		break;
 }
 if (is_changingdir) {
+	//jump_current = 0;
 	if (x > changedir_pos + changedir_limit) || (x < changedir_pos - changedir_limit) {
 		is_changingdir = false; 
 		changedir_pos = 0;
@@ -401,6 +404,7 @@ if (!is_onfloor) && (!is_groundpound) {
 	image_speed = 0;
 	
 	if (is_jump == 2) {
+		// Side flip spin
 		if (abs(render_angle) < 360) {
 			sprite_index = sPlayerFlip;
 			render_angle -= 10 * sign(dir);
@@ -414,6 +418,13 @@ if (!is_onfloor) && (!is_groundpound) {
 			image_index = 1;
 		} else {
 			image_index = 0;
+		}
+		
+		// Triple jump spin
+		if (jump_current == 3) {
+			if (abs(render_angle) < 360) {
+				render_angle -= 10 * sign(dir);
+			}
 		}
 	}
 } else if (is_onfloor) {
