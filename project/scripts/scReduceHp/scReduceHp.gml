@@ -11,6 +11,12 @@ if (!oPlayer.is_invincible) {
 	if (global.hp == 0) {
 		room_restart();
 	}
+	
+	// Cancel fancy jumps
+	jump_current = 0;
+	if (is_jump > 0) {
+		is_jump = 1;
+	}
 
 	// Make player invincible temporarily
 	oPlayer.is_invincible = true;

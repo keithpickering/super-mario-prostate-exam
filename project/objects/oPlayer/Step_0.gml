@@ -92,7 +92,7 @@ if (is_onfloor) {
 	timer_wallslide = 0;
 	
 	timer_jumpcancel++;
-	if (timer_jumpcancel > 20) {
+	if (timer_jumpcancel > 10) {
 		timer_jumpcancel = 0;
 		jump_current = 0;
 	}
@@ -121,6 +121,7 @@ if (is_onfloor) {
 	//if (timer_falldamage >= 100) scReduceHp();
 	//timer_falldamage = 0;
 	
+	
 	// Jumping
 	if (key_jump_pressed) {
 		if ((hsp < 0 && key_right) || (hsp > 0 && key_left)) && (move != 0) {
@@ -134,7 +135,7 @@ if (is_onfloor) {
 			// Regular jump
 			var this_doublejump_multi = 1;
 			// Double/triple jump counter
-			if (timer_jumpcancel <= 20) {
+			if (timer_jumpcancel <= 10) {
 				jump_current++;
 				
 				// Double jump can be done while standing still,
@@ -186,10 +187,21 @@ if (is_onfloor) {
 		}
 	}
 	
+	// Slide down slopes
 	if (is_onslope != 0) {
 		if (is_crouch) {
 			hsp += 0.25 * is_onslope;
 			this_decel /= 2;
+		}
+	}
+	
+	if (hsp != 0) {
+		if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
+			if (is_jump == 1) {
+				jump_current = 1;
+			} else {
+				jump_current = 0;
+			}
 		}
 	}
 } else {
@@ -205,7 +217,9 @@ if (is_onfloor) {
 	// Check if jump key has been released while still moving up,
 	// and if so prevent from jumping to the maximum height
 	if (!key_jump) && (sign(vsp) == -1) {
-		vsp /= 1.5;	
+		var jump_reduce = 1.5;
+		if (is_jump == 2) || (jump_current > 1) jump_reduce = 1.1;
+		vsp /= jump_reduce;	
 	}
 	
 	if (is_wallslide != 0) {
@@ -274,7 +288,7 @@ switch (move) {
 	case 1:
 		// Move right
 		if (!is_wallslide) {
-			if (is_jump != 2) {
+			if (is_jump != 2) && (jump_current != 3) {
 				if (dir != 1) {
 					is_changingdir = true;
 					changedir_pos = x;
@@ -289,7 +303,7 @@ switch (move) {
 	case -1:
 		// Move left
 		if (!is_wallslide) {
-			if (is_jump != 2) {
+			if (is_jump != 2) && (jump_current != 3) {
 				if (dir != -1) {
 					is_changingdir = true;
 					changedir_pos = x;
@@ -314,8 +328,8 @@ switch (move) {
 		
 		break;
 }
+
 if (is_changingdir) {
-	//jump_current = 0;
 	if (x > changedir_pos + changedir_limit) || (x < changedir_pos - changedir_limit) {
 		is_changingdir = false; 
 		changedir_pos = 0;
@@ -342,7 +356,7 @@ if (vsp > vsp_max) vsp = vsp_max;
  */
 var this_enemy = instance_place(x, y, oEnemyParent);
 if (this_enemy != noone) && (!this_enemy.is_dead) {
-	if (vsp > 0) && (!is_onfloor) {
+	if ((vsp > 0) && (!is_onfloor)) || (is_crouch) && (is_onslope) && (abs(hsp) > 4) {
 		// If we're moving down, stomp the enemy
 		with (this_enemy) {
 			is_dead = true;
@@ -364,11 +378,11 @@ if (this_enemy != noone) && (!this_enemy.is_dead) {
 		scReduceHp();
 		
 		// Bounce back a bit
-		if (this_enemy.is_onfloor) vsp = -jump_max/2;
+		//if (this_enemy.is_onfloor) vsp = -jump_max/2;
 		if (sign(this_enemy.hsp) == sign(hsp)) {
-			hsp = -6 * sign(this_enemy.hsp);
+			hsp = -walksp * sign(this_enemy.hsp);
 		} else {
-			hsp = 6 * sign(this_enemy.hsp);
+			hsp = walksp * sign(this_enemy.hsp);
 		}
 	}
 }
