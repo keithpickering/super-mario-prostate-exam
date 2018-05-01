@@ -26,14 +26,7 @@ if (!is_dead) {
 	var this_accel = accel;
 	var this_decel = decel;
 
-	// Turn around when we hit a wall
-	if (is_onwall == 1) && (is_onslope == 0) {
-		move = -1;
-	} else if (is_onwall == -1) && (is_onslope == 0) {
-		move = 1;
-	} else {
-		
-	}
+	
 
 	/**
 	 * HORIZONTAL MOVEMENT + EASING
@@ -77,12 +70,36 @@ vsp = vsp + grv;
  */
 if (vsp > vsp_max) vsp = vsp_max;
 
-// Turn around when we hit another enemy
-if (instance_place(x + hsp, y, oEnemyParent)) && (abs(hsp) > 0) {
-	hsp = 0;
-	move = -move;
+// Handle colliding with another enemy
+var other_enemy = instance_place(x, y, oEnemyParent);
+if (other_enemy != noone) {
+	var move_dis = 1;
+	var turn_dir;
+	
+	// Figure out which direction to turn
+	//if (x == other_enemy.x && y == other_enemy.y) {
+	//	turn_dir = random(360);
+	//} else {
+		turn_dir = point_direction(other_enemy.x,other_enemy.y,x,y);
+	//}
+	
+	var dx = lengthdir_x(move_dis,turn_dir);
+	var dy = lengthdir_y(move_dis,turn_dir);
+	
+	// Start moving the determined direction
+	move = sign(dx);
+
+	// Move as long as there isn't a wall
+	if (!place_meeting(x + dx, y, oWall)) x += dx;
+	if (!place_meeting(x, y + dy, oWall)) y += dy;
 }
 
+// Turn around if we hit a wall
+if (is_onwall == 1) && (is_onslope == 0) {
+	move = -1;
+} else if (is_onwall == -1) && (is_onslope == 0) {
+	move = 1;
+}
 
 /**
  * COLLISION

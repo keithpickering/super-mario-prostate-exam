@@ -14,6 +14,10 @@ dir = move;
 
 is_dead = false;
 is_turningaround = false;
+gettingout = false;
+
+// Used for correcting slope positioning on some enemies
+push_current = 0;
 
 /**
  * Check if against a wall
