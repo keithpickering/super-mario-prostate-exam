@@ -48,6 +48,7 @@ is_onslope = 0;
  *  1: Right wall
  */
 is_onwall = 0;
+was_onwall = 0;
 
 /**
  * Check if we're sliding down a wall

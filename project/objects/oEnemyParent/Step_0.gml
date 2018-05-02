@@ -72,7 +72,7 @@ if (vsp > vsp_max) vsp = vsp_max;
 
 // Handle colliding with another enemy
 var other_enemy = instance_place(x, y, oEnemyParent);
-if (other_enemy != noone) {
+if (other_enemy != noone) && (!other_enemy.is_dead) {
 	var move_dis = 1;
 	var turn_dir;
 	
@@ -90,8 +90,10 @@ if (other_enemy != noone) {
 	move = sign(dx);
 
 	// Move as long as there isn't a wall
-	if (!place_meeting(x + dx, y, oWall)) x += dx;
-	if (!place_meeting(x, y + dy, oWall)) y += dy;
+	//if (!place_meeting(x + dx, y, oWall)) x += dx;
+	//if (!place_meeting(x, y + dy, oWall)) y += dy;
+	
+	hsp = sign(dx) * walksp;
 }
 
 // Turn around if we hit a wall

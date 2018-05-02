@@ -5,6 +5,8 @@
 // Check pressed keys
 key_left = keyboard_check(vk_left);
 key_right = keyboard_check(vk_right);
+key_left_pressed = keyboard_check_pressed(vk_left);
+key_right_pressed = keyboard_check_pressed(vk_right);
 key_jump = keyboard_check(ord("Z"));
 key_jump_pressed = keyboard_check_pressed(ord("Z"));
 key_run = keyboard_check(ord("X"));
@@ -12,6 +14,7 @@ key_crouch = keyboard_check(vk_down);
 key_crouch_released = keyboard_check_released(vk_down);
 
 // Check if we're against a wall
+was_onwall = is_onwall;
 if (place_meeting(x + 1, y, oWall)) {
 	is_onwall = 1;
 } else if (place_meeting(x - 1, y, oWall)) {
@@ -452,6 +455,7 @@ if (!is_onfloor) && (!is_groundpound) {
 		} else {
 			// Running
 			sprite_index = sPlayerRun;
+			if (key_left_pressed) || (key_right_pressed) image_index = 2;
 			if (key_run) {
 				image_speed *= 1.5;
 				if (image_speed >= 2) image_speed = 2;

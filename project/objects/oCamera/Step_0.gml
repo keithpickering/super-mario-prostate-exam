@@ -4,7 +4,7 @@ if (instance_exists(follow)) {
 			ground_level = follow.y;
 		}
 		
-		if (follow.y > ground_level) || (follow.is_jump == 3) || (follow.is_wallslide) {
+		if (follow.y > ground_level) || (follow.is_jump > 1) || (follow.is_wallslide) || (follow.jump_current > 2) {
 			y_to = follow.y;
 			if (follow.vsp > 0) y_to += (follow.vsp*10);
 		} else {
