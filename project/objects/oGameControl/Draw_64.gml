@@ -32,16 +32,24 @@ var this_pmy = EaseInOutBack(timer_pm_slide, pmy, y_final-pmy, pm_time);
 	
 // Pulsating at 1HP
 var scale_target = 1;
-if (global.hp == 1) {
+if (global.hp < 3) {
 	if (timer_pm_pulse > 50) {
 		timer_pm_pulse = 0;
 		scale_target = 1;
 	} else {
 		timer_pm_pulse += 1;
 		if (timer_pm_pulse > 10) {
-			scale_target = 1.1;
+			if (global.hp == 1) {
+				scale_target = 1.05;
+			} else {
+				scale_target = 1;
+			}
 		} else {
-			scale_target = 0.75;
+			if (global.hp == 1) {
+				scale_target = 0.75;
+			} else {
+				scale_target = 0.9;
+			}
 		}
 	}
 }

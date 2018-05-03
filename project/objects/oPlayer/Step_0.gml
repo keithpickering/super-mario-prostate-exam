@@ -101,10 +101,10 @@ if (is_onfloor) {
 	}
 	
 	// Show power meter if we stand still, just got hit, or are low on health
-	if (abs(hsp) == 0) || (is_invincible) || (global.hp == 1) {
+	if (abs(hsp) == 0) || (is_invincible) || (global.hp < 3) {
 		timer_showhp += 1;
 		timer_hidehp = 0;
-		if (abs(hsp == 0)) {
+		if (abs(hsp == 0)) && (!is_invincible) {
 			if (timer_showhp > 50) {
 				global.show_hp = true;
 			}
@@ -114,7 +114,7 @@ if (is_onfloor) {
 	} else if (abs(hsp) > 0) {
 		// If we start running, hide the power meter after a bit
 		timer_hidehp += 1;
-		if (timer_hidehp > 20) {
+		if (timer_hidehp > 40) {
 			global.show_hp = false;
 		}
 		timer_showhp = 0;
