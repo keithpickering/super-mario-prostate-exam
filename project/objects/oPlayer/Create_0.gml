@@ -83,6 +83,8 @@ is_jump = 0;
  */
 is_invincible = false;
 
+is_hurt = false;
+
 
 
 // Draw variables

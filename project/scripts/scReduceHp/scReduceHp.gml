@@ -13,12 +13,13 @@ if (!oPlayer.is_invincible) {
 	}
 	
 	// Cancel fancy jumps
-	jump_current = 0;
-	if (is_jump > 0) {
-		is_jump = 1;
+	oPlayer.jump_current = 0;
+	if (oPlayer.is_jump > 0) {
+		oPlayer.is_jump = 1;
 	}
 
 	// Make player invincible temporarily
 	oPlayer.is_invincible = true;
+	oPlayer.is_hurt = true;
 	oPlayer.alarm[0] = 2 * room_speed;
 }
