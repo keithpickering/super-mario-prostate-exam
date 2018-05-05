@@ -5,9 +5,19 @@ grv = 0.6;
 walksp = 1;
 accel = 0.15;
 decel = 0.15;
+wander = false;
+is_wander = false;
+is_alert = false;
+is_chasing = false;
 
-// Start moving left
-move = -1;
+// Check if this particular instance is supposed to
+// wander around, or just move until it hits a wall
+if (wander) {
+	//is_wander = true;
+} else {
+	// Start moving left
+	move = -1;
+}
 
 // Status variables
 dir = move;

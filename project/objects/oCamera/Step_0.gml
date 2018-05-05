@@ -40,7 +40,7 @@ x += (x_to - x) / cam_pan;
 y += (y_to - y) / cam_pan;
 
 if (is_shake) {
-	var angle = random_range(-0.5,0.5)
+	var angle = random_range(-0.75,0.75)
     camera_set_view_angle(global.cam, angle);
 	var push = random_range(-2,2);
 	camera_set_view_pos(global.cam, x - view_w_half + push, y - view_h_half + push);

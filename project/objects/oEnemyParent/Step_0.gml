@@ -20,11 +20,60 @@ if (!is_dead) {
 	} else if (place_meeting(x - 2, y + 1, oSlope)) {
 		is_onslope = 1;
 	}
-
+	
 	// Determine max horizontal speed
 	var hsp_max = move * walksp;
 	var this_accel = accel;
 	var this_decel = decel;
+	
+	if (wander) {
+		if (is_alert) {
+			// We just saw the player, jump in surprise
+			vsp -= 7.5;
+			is_alert = false;
+			is_chasing = true;
+		} else if (is_chasing) {
+			image_speed = 2;
+			if (is_onfloor) {
+				// Surprised jump is done, start chasing player
+				var side;
+				if (x > oPlayer.x) {
+					side = 1;
+				} else {
+					side = -1;
+				}
+				move = -side;
+				hsp_max = move * walksp * 2;
+			
+				if (instance_place(x, y, oPlayer)) {
+					// Stop chasing if we actually contact the player
+					is_alert = false;
+					is_wander = true;
+				} else if (distance_to_object(oPlayer) > 300) {
+					// Stop chasing if the player is far enough away
+					is_chasing = false;
+					move = 0;
+				}
+			}
+		} else if (distance_to_object(oPlayer) < 200) && (dir == -oPlayer.dir) {
+			// We can see the player, stop wandering
+			is_alert = true;
+			is_wander = false;
+		} else if (!is_wander) {
+			// After a couple seconds of nothing else happening, start wandering
+			is_wander = true;
+			alarm[1] = random_range(100, 200);
+		}
+		
+		if (!is_chasing) {
+			image_speed = 1;
+		}
+	}
+	
+	if (move = 0) {
+		image_speed = 0;
+		image_index = 1;
+	}
 
 	
 
