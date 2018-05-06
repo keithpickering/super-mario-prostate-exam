@@ -32,4 +32,5 @@ if (is_onslope != 0) {
 	push_current = 0;
 }*/
 
-draw_sprite_ext(sprite_index, image_index, this_x, this_y, draw_xscale, draw_yscale, render_angle, image_blend, image_alpha);
+draw_sprite_ext(sprite_index, image_index, this_x, this_y + y_correct, draw_xscale, draw_yscale, render_angle, image_blend, image_alpha);
+

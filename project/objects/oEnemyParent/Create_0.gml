@@ -45,3 +45,8 @@ is_onfloor = 0;
 render_angle = 0;
 draw_xscale = 1;
 draw_yscale = 1;
+
+is_confused = false;
+is_jump = false;
+
+y_correct = 0;

@@ -32,6 +32,7 @@ if (!is_dead) {
 			vsp -= 7.5;
 			is_alert = false;
 			is_chasing = true;
+			is_jump = true;
 		} else if (is_chasing) {
 			image_speed = 2;
 			if (is_onfloor) {
@@ -52,10 +53,11 @@ if (!is_dead) {
 				} else if (distance_to_object(oPlayer) > 300) {
 					// Stop chasing if the player is far enough away
 					is_chasing = false;
+					is_confused = true;
 					move = 0;
 				}
 			}
-		} else if (distance_to_object(oPlayer) < 200) && (dir == -oPlayer.dir) {
+		} else if (distance_to_object(oPlayer) < 200) && ((dir == -1 && x > oPlayer.x) || (dir == 1 && x < oPlayer.x)) {
 			// We can see the player, stop wandering
 			is_alert = true;
 			is_wander = false;
@@ -164,4 +166,26 @@ vsp = collision_data[3];
 
 // Flip sprite based on direction
 draw_xscale = dir;
+
+
+
+// Stretch on jump
+if (is_jump) {
+	is_jump = false;
+	draw_yscale = 1.5;
+	draw_xscale = 0.75 * dir;
+}
+
+// Gradually return to non-stretched values
+draw_xscale = lerp(draw_xscale, dir, 0.07);
+draw_yscale = lerp(draw_yscale, 1, 0.07);
+
+// Squash on landing
+if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
+	draw_xscale = 1.5 * dir;
+	draw_yscale = 0.75;
+}
+
+// Adjust y position (visual only)
+y_correct = (sprite_height - (sprite_height*draw_yscale)) / 2;
 
