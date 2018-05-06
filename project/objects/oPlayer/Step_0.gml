@@ -533,7 +533,7 @@ draw_xscale = dir;
 
 // Stretch on jump
 if (key_jump_pressed) && (is_onfloor || is_onwall != 0) {
-	draw_yscale = 1.35;
+	draw_yscale = 1.4;
 	draw_xscale = 0.75 * dir;
 	if (is_onfloor) {
 		instance_create_depth(x - sprite_get_width(sImpact)/2, y + sprite_height/2 - sprite_get_height(sImpact)/2 + 4, 1, oImpact);

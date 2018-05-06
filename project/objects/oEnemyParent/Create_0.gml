@@ -3,8 +3,8 @@ vsp = 0;
 vsp_max = 30;
 grv = 0.6;
 walksp = 1;
-accel = 0.15;
-decel = 0.15;
+accel = 0.05;
+decel = 0.05;
 wander = false;
 is_wander = false;
 is_alert = false;
@@ -48,5 +48,10 @@ draw_yscale = 1;
 
 is_confused = false;
 is_jump = false;
+is_changingdir = false;
 
 y_correct = 0;
+
+timer_confused = 0;
+timer_wander = 0;
+timer_changedir = 0;

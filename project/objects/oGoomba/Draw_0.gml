@@ -34,3 +34,6 @@ if (is_onslope != 0) {
 
 draw_sprite_ext(sprite_index, image_index, this_x, this_y + y_correct, draw_xscale, draw_yscale, render_angle, image_blend, image_alpha);
 
+if (is_confused) {
+	draw_text(x, bbox_top-20, "?");
+}

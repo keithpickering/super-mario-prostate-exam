@@ -43,28 +43,42 @@ if (!is_dead) {
 				} else {
 					side = -1;
 				}
+				
 				move = -side;
 				hsp_max = move * walksp * 2;
 			
-				if (instance_place(x, y, oPlayer)) {
-					// Stop chasing if we actually contact the player
-					is_alert = false;
-					is_wander = true;
-				} else if (distance_to_object(oPlayer) > 300) {
-					// Stop chasing if the player is far enough away
+				var leavealone_dist;
+				if (dir == -1 && x > oPlayer.x) || (dir == 1 && x < oPlayer.x) {
+					leavealone_dist = 400;
+				} else {
+					leavealone_dist = 200;
+				}
+					
+				if (distance_to_object(oPlayer) > leavealone_dist) {
 					is_chasing = false;
 					is_confused = true;
 					move = 0;
 				}
 			}
-		} else if (distance_to_object(oPlayer) < 200) && ((dir == -1 && x > oPlayer.x) || (dir == 1 && x < oPlayer.x)) {
+		} else if (distance_to_object(oPlayer) < 250) && ((dir == -1 && x > oPlayer.x) || (dir == 1 && x < oPlayer.x)) {
 			// We can see the player, stop wandering
-			is_alert = true;
-			is_wander = false;
+			if (timer_wander > 15) {
+				is_alert = true;
+				is_wander = false;
+			}
+		} else if (is_confused) {
+			timer_confused++;
+			if (timer_confused > 50) {
+				is_confused = false;
+				timer_confused = 0;
+			}
 		} else if (!is_wander) {
-			// After a couple seconds of nothing else happening, start wandering
 			is_wander = true;
 			alarm[1] = random_range(100, 200);
+		}
+		
+		if (is_wander) {
+			timer_wander++;
 		}
 		
 		if (!is_chasing) {
@@ -72,7 +86,7 @@ if (!is_dead) {
 		}
 	}
 	
-	if (move = 0) {
+	if (move == 0) {
 		image_speed = 0;
 		image_index = 1;
 	}
@@ -177,12 +191,12 @@ if (is_jump) {
 }
 
 // Gradually return to non-stretched values
-draw_xscale = lerp(draw_xscale, dir, 0.07);
-draw_yscale = lerp(draw_yscale, 1, 0.07);
+draw_xscale = lerp(draw_xscale, dir, 0.1);
+draw_yscale = lerp(draw_yscale, 1, 0.1);
 
 // Squash on landing
 if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
-	draw_xscale = 1.5 * dir;
+	draw_xscale = 1.25 * dir;
 	draw_yscale = 0.75;
 }
 
