@@ -15,9 +15,9 @@ key_crouch_released = keyboard_check_released(vk_down);
 
 // Check if we're against a wall
 was_onwall = is_onwall;
-if (place_meeting(x + 1, y, oWall)) {
+if (place_meeting(x + 1, y, oWall)) && (place_meeting(x + 1, y - 48, oWall)) {
 	is_onwall = 1;
-} else if (place_meeting(x - 1, y, oWall)) {
+} else if (place_meeting(x - 1, y, oWall)) && (place_meeting(x - 1, y - 48, oWall)) {
 	is_onwall = -1;
 } else {
 	is_onwall = 0;

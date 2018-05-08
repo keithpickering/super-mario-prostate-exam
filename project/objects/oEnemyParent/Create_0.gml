@@ -55,3 +55,14 @@ y_correct = 0;
 timer_confused = 0;
 timer_wander = 0;
 timer_changedir = 0;
+
+/**
+ * Mutually exclusive states
+ *
+ * 0: Traditional goomba-like behavior
+ * 1: Wandering
+ * 2: Alert
+ * 3: Chasing the player
+ * 4: Confused
+ */
+state = 0;
