@@ -136,10 +136,10 @@ if (is_onfloor) {
 			is_jump = 2;
 			// Reset double/triple jump
 			jump_current = 1;
-		} else if (is_crouch) && (abs(hsp) > 1) && (move != 0) {
+		} else if (timer_crouch > 10) && (abs(hsp) > 0) && (move != 0) {
 			// Long jump
-			vsp = -jump_max / 1.35;
-			hsp = move * 6;
+			vsp = -jump_max / 1.25;
+			hsp = hsp_max;
 			is_jump = 4;
 			// Reset double/triple jump
 			jump_current = 1;
@@ -193,9 +193,11 @@ if (is_onfloor) {
 		timer_groundpound_done = 0;
 		if (key_crouch) {
 			is_crouch = 1;
+			timer_crouch++;
 			move = 0;
 		} else {
 			is_crouch = 0;
+			timer_crouch = 0;
 		}
 	}
 	
@@ -228,7 +230,7 @@ if (is_onfloor) {
 	
 	// Check if jump key has been released while still moving up,
 	// and if so prevent from jumping to the maximum height
-	if (!key_jump) && (sign(vsp) == -1) {
+	if (!key_jump) && (sign(vsp) == -1) && (is_jump != 4) {
 		var jump_reduce = 1.5;
 		if (is_jump == 2) || (jump_current > 1) jump_reduce = 1.1;
 		vsp /= jump_reduce;	
@@ -300,7 +302,7 @@ switch (move) {
 	case 1:
 		// Move right
 		if (!is_wallslide) {
-			if (is_jump != 2) && (jump_current != 3) {
+			if (is_jump != 2) && (is_jump != 4) && (jump_current != 3) {
 				if (dir != 1) {
 					is_changingdir = true;
 					changedir_pos = x;
@@ -315,7 +317,7 @@ switch (move) {
 	case -1:
 		// Move left
 		if (!is_wallslide) {
-			if (is_jump != 2) && (jump_current != 3) {
+			if (is_jump != 2) && (is_jump != 4) && (jump_current != 3) {
 				if (dir != -1) {
 					is_changingdir = true;
 					changedir_pos = x;
@@ -347,6 +349,7 @@ if (is_changingdir) {
 		changedir_pos = 0;
 	}
 }
+
 
 
 /**

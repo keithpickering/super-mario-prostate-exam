@@ -6,7 +6,7 @@ vsp = 0;
 vsp_max = 20;
 grv = 0.6;
 frc = 0.5; // Friction when sliding down a wall
-walksp = 4.5;
+walksp = 5.5;
 runsp = 9;
 wallslidesp = 6;
 accel = 0.15;
@@ -18,7 +18,7 @@ decel = 0.15;
 jump_max = 17;
 jump_max_running = 19;
 jump_current = 0; // For double/triple jump
-walljump_force = walksp;
+walljump_force = 5;
 sideflip_force = 3.5;
 
 /**
@@ -104,3 +104,4 @@ timer_showhp = 0;
 timer_hidehp = 0;
 timer_falldamage = 0;
 timer_jumpcancel = 0;
+timer_crouch = 0;
