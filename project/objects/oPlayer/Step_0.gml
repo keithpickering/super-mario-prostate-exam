@@ -431,16 +431,25 @@ if (!is_onfloor) && (!is_groundpound) {
 		}
 	} else {
 		sprite_index = sPlayerJump;
-		if (sign(vsp) > 0) {
-			image_index = 1;
-		} else {
-			image_index = 0;
-		}
 		
-		// Triple jump spin
-		if (jump_current == 3) {
-			if (abs(render_angle) < 360) {
-				render_angle -= 10 * sign(dir);
+		if (jump_current < 2) {
+			if (sign(vsp) > 0) {
+				image_index = 1;
+			} else {
+				image_index = 0;
+			}
+		} else {
+			if (jump_current == 2) {
+				if (sign(vsp) > 0) {
+					image_index = 2;
+				} else {
+					image_index = 2;
+				}
+			} else if (jump_current == 3) {
+				image_index = 3;
+				if (abs(render_angle) < 360) {
+					render_angle -= 10 * sign(dir);
+				}
 			}
 		}
 	}
