@@ -49,7 +49,7 @@ if (!is_dead) {
 			
 				var leavealone_dist;
 				if (dir == -1 && x > oPlayer.x) || (dir == 1 && x < oPlayer.x) {
-					leavealone_dist = 400;
+					leavealone_dist = 500;
 				} else {
 					leavealone_dist = 200;
 				}
@@ -60,7 +60,7 @@ if (!is_dead) {
 					move = 0;
 				}
 			}
-		} else if (distance_to_object(oPlayer) < 250) && ((dir == -1 && x > oPlayer.x) || (dir == 1 && x < oPlayer.x)) {
+		} else if (distance_to_object(oPlayer) < 300) && ((dir == -1 && x > oPlayer.x) || (dir == 1 && x < oPlayer.x)) {
 			// We can see the player, stop wandering
 			if (timer_wander > 15) {
 				is_alert = true;
