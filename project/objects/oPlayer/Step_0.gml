@@ -74,6 +74,8 @@ if (!is_onfloor) {
 		// This forces us off the wall a little more
 		// Otherwise you can keep from falling indefinitely
 		this_accel /= 1.2;
+	} else if (is_jump == 4) {
+		hsp_max *= 2;
 	}
 }
 if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
@@ -132,6 +134,13 @@ if (is_onfloor) {
 			vsp = -jump_max * 1.15;
 			hsp += move * sideflip_force;
 			is_jump = 2;
+			// Reset double/triple jump
+			jump_current = 1;
+		} else if (is_crouch) && (abs(hsp) > 1) && (move != 0) {
+			// Long jump
+			vsp = -jump_max / 1.35;
+			hsp = move * 6;
+			is_jump = 4;
 			// Reset double/triple jump
 			jump_current = 1;
 		} else {

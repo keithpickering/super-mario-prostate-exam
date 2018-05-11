@@ -75,6 +75,7 @@ is_groundpound = 0;
  * 1: Normal jump
  * 2: Side flip
  * 3: Walljump
+ * 4: Long jump
  */
 is_jump = 0;
 
