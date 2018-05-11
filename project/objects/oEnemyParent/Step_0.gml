@@ -65,8 +65,15 @@ if (!is_dead) {
 			if (timer_wander > 15) {
 				is_alert = true;
 				is_wander = false;
+				is_confused = false;
 			}
+		} else if (instance_place(x, y, oPlayer)) {
+			// Player bumped us from behind
+			is_alert = true;
+			is_wander = false;
+			is_confused = false;
 		} else if (is_confused) {
+			move = 0;
 			timer_confused++;
 			if (timer_confused > 50) {
 				is_confused = false;
