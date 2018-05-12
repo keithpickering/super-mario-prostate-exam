@@ -128,7 +128,7 @@ if (is_onfloor) {
 	
 	
 	// Jumping
-	if (key_jump_pressed) {
+	if (key_jump_pressed) && (!is_groundpound) {
 		if ((hsp < 0 && key_right) || (hsp > 0 && key_left)) && (move != 0) {
 			// Side flip
 			vsp = -jump_max * 1.15;
@@ -203,10 +203,19 @@ if (is_onfloor) {
 	
 	// Slide down slopes
 	if (is_onslope != 0) {
-		if (is_crouch) {
+		if (is_crouch) || (is_groundpound) {
+			is_sliding = true;
 			hsp += 0.25 * is_onslope;
 			this_decel /= 2;
+		} else {
+			is_sliding = false;
 		}
+		
+		if (is_sliding) {
+			
+		}
+	} else {
+		is_sliding = false;
 	}
 	
 	if (hsp != 0) {
@@ -219,6 +228,7 @@ if (is_onfloor) {
 		}
 	}
 } else {
+	is_sliding = false;
 	timer_jumpcancel = 0;
 
 	// Increment fall damage counter
@@ -230,7 +240,7 @@ if (is_onfloor) {
 	
 	// Check if jump key has been released while still moving up,
 	// and if so prevent from jumping to the maximum height
-	if (!key_jump) && (sign(vsp) == -1) && (is_jump != 4) {
+	if (!key_jump) && (sign(vsp) == -1) && (!is_groundpound) && (is_jump != 4) {
 		var jump_reduce = 1.5;
 		if (is_jump == 2) || (jump_current > 1) jump_reduce = 1.1;
 		vsp /= jump_reduce;	
@@ -274,7 +284,7 @@ if (is_onfloor) {
 		
 		// Ground pound
 		if (key_crouch) && (!is_groundpound) && (!is_crouch) {
-			vsp = 8;
+			vsp = 0;
 			hsp = 0;
 			timer_groundpound = 0;
 			is_groundpound = 1;
@@ -283,13 +293,9 @@ if (is_onfloor) {
 			timer_groundpound += 1;
 				
 			if (timer_groundpound >= 20) {
-				if (vsp < 1) {
-					vsp = 3;
-				} else {
-					vsp *= 1.5;
-				}
+				vsp += 5;
 			} else {
-				vsp -= 1.75;
+				vsp -= 0.375;
 			}
 		}
 	}
@@ -370,8 +376,13 @@ if (vsp > vsp_max) vsp = vsp_max;
  * ENEMY INTERACTIONS
  */
 var this_enemy = instance_place(x, y, oEnemyParent);
-if (this_enemy != noone) && (!this_enemy.is_dead) {
-	if ((vsp > 0) && (!is_onfloor)) || (is_crouch) && (is_onslope) && (abs(hsp) > 4) {
+if (this_enemy != noone) && (!this_enemy.is_dead) && !(this_enemy.is_dying) {
+	if (is_crouch) && (abs(hsp) >= walksp) {
+		with (this_enemy) {
+			vsp = -10;
+			is_dying = true;
+		}
+	} else if ((vsp > 0) && (!is_onfloor)) || (is_crouch) && (is_onslope) && (abs(hsp) > 4) {
 		// If we're moving down, stomp the enemy
 		with (this_enemy) {
 			is_dead = true;
@@ -453,12 +464,12 @@ if (!is_onfloor) && (!is_groundpound) {
 		} else {
 			if (jump_current == 2) {
 				if (sign(vsp) > 0) {
-					image_index = 2;
+					image_index = 3;
 				} else {
 					image_index = 2;
 				}
 			} else if (jump_current == 3) {
-				image_index = 3;
+				image_index = 4;
 				if (abs(render_angle) < 360) {
 					render_angle -= 10 * sign(dir);
 				}
@@ -530,7 +541,7 @@ if (key_crouch_released && is_onfloor) || (timer_groundpound_done >= 19 && !key_
 	if (!is_onfloor) {
 		sprite_index = sPlayerRoll;
 		image_speed = 0;
-		if (timer_groundpound >= 20) {
+		if (timer_groundpound == 1) || (timer_groundpound >= 20) {
 			render_angle = 0;
 		} else if (abs(render_angle) < 360) {
 			render_angle -= 18 * sign(dir);
@@ -555,9 +566,9 @@ draw_xscale = dir;
 // Stretch on jump
 if (key_jump_pressed) && (is_onfloor || is_onwall != 0) {
 	draw_yscale = 1.4;
-	draw_xscale = 0.75 * dir;
+	draw_xscale = 0.6 * dir;
 	if (is_onfloor) {
-		instance_create_depth(x - sprite_get_width(sImpact)/2, y + sprite_height/2 - sprite_get_height(sImpact)/2 + 4, 1, oImpact);
+		//instance_create_depth(x - sprite_get_width(sImpact)/2, y + sprite_height/2 - sprite_get_height(sImpact)/2 + 4, 1, oImpact);
 	} else {
 		//instance_create_depth(x, y, 1, oImpactWall);	
 	}
@@ -575,10 +586,10 @@ draw_yscale = lerp(draw_yscale, 1, 0.1);
 if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
 	draw_xscale = 1.25 * dir;
 	var y_amt = vsp / 9;
-	if (y_amt < 0.75) {
-		y_amt = 0.75;
-	} else if (y_amt > 0.9) {
-		y_amt = 0.9;
+	if (y_amt < 0.65) {
+		y_amt = 0.65;
+	} else if (y_amt > 0.8) {
+		y_amt = 0.8;
 	}
 	draw_yscale = y_amt;
 }

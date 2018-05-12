@@ -86,6 +86,8 @@ is_invincible = false;
 
 is_hurt = false;
 
+is_sliding = false;
+
 
 
 // Draw variables

@@ -22,7 +22,9 @@ if (wander) {
 // Status variables
 dir = move;
 
+is_dying = false;
 is_dead = false;
+is_noclip = false;
 is_turningaround = false;
 gettingout = false;
 

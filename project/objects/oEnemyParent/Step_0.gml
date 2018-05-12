@@ -2,7 +2,7 @@
  * SETUP
  */
  
-if (!is_dead) {
+if (!is_dead) && (!is_dying) {
 	// Check if against a wall
 	if (place_meeting(x + 1, y, oWall)) {
 		is_onwall = 1;
@@ -98,7 +98,20 @@ if (!is_dead) {
 		image_index = 1;
 	}
 
-	
+	var dist_to_player = distance_to_object(oPlayer);
+	if (oPlayer.is_groundpound) && (oPlayer.is_onfloor) && (dist_to_player < 100) && (!is_dead) {
+		move = 0;
+		if (oPlayer.timer_groundpound_done == 1) {
+			var move_dist = 100/dist_to_player;
+			if (move_dist > 5) move_dist = 5;
+			vsp = -move_dist*2;
+			if (oPlayer.x > x) {
+				hsp = -move_dist/2;
+			} else {
+				hsp = move_dist/2;
+			}
+		}
+	}
 
 	/**
 	 * HORIZONTAL MOVEMENT + EASING
@@ -127,7 +140,16 @@ if (!is_dead) {
 			}
 			break;
 	}
-} else {
+} else if (is_dying) {
+	is_noclip = true;
+	is_chasing = false;
+	is_alert = false;
+	is_wander = false;
+	// Destroy once we're out of view
+	if ((bbox_right <= camera_get_view_x(global.cam)) && (bbox_left >= camera_get_view_x(global.cam) + camera_get_view_width(global.cam)) && (bbox_bottom <= camera_get_view_y(global.cam)) && (bbox_top >= camera_get_view_y(global.cam) + camera_get_view_height(global.cam))) {
+	   instance_destroy();
+	}
+} else if (is_dead) {
 	// We dead, don't move
 	hsp = 0;
 }
@@ -142,47 +164,52 @@ vsp = vsp + grv;
  */
 if (vsp > vsp_max) vsp = vsp_max;
 
-// Handle colliding with another enemy
-var other_enemy = instance_place(x, y, oEnemyParent);
-if (other_enemy != noone) && (!other_enemy.is_dead) {
-	var move_dis = 1;
-	var turn_dir;
-	
-	// Figure out which direction to turn
-	//if (x == other_enemy.x && y == other_enemy.y) {
-	//	turn_dir = random(360);
-	//} else {
-		turn_dir = point_direction(other_enemy.x,other_enemy.y,x,y);
-	//}
-	
-	var dx = lengthdir_x(move_dis,turn_dir);
-	var dy = lengthdir_y(move_dis,turn_dir);
-	
-	// Start moving the determined direction
-	move = sign(dx);
-
-	// Move as long as there isn't a wall
-	//if (!place_meeting(x + dx, y, oWall)) x += dx;
-	//if (!place_meeting(x, y + dy, oWall)) y += dy;
-	
-	hsp = sign(dx) * walksp;
-}
-
-// Turn around if we hit a wall
-if (is_onwall == 1) && (is_onslope == 0) {
-	move = -1;
-} else if (is_onwall == -1) && (is_onslope == 0) {
-	move = 1;
-}
-
 /**
  * COLLISION
  */
-var collision_data = scCollision(x,y,hsp,vsp);
-x = collision_data[0];
-y = collision_data[1];
-hsp = collision_data[2];
-vsp = collision_data[3];
+if (!is_noclip) {
+	// Handle colliding with another enemy
+	var other_enemy = instance_place(x, y, oEnemyParent);
+	if (other_enemy != noone) && (!other_enemy.is_dead) {
+		var move_dis = 1;
+		var turn_dir;
+	
+		// Figure out which direction to turn
+		//if (x == other_enemy.x && y == other_enemy.y) {
+		//	turn_dir = random(360);
+		//} else {
+			turn_dir = point_direction(other_enemy.x,other_enemy.y,x,y);
+		//}
+	
+		var dx = lengthdir_x(move_dis,turn_dir);
+		var dy = lengthdir_y(move_dis,turn_dir);
+	
+		// Start moving the determined direction
+		move = sign(dx);
+
+		// Move as long as there isn't a wall
+		//if (!place_meeting(x + dx, y, oWall)) x += dx;
+		//if (!place_meeting(x, y + dy, oWall)) y += dy;
+	
+		hsp = sign(dx) * walksp;
+	}
+
+	// Turn around if we hit a wall
+	if (is_onwall == 1) && (is_onslope == 0) {
+		move = -1;
+	} else if (is_onwall == -1) && (is_onslope == 0) {
+		move = 1;
+	}
+
+	var collision_data = scCollision(x,y,hsp,vsp);
+	x = collision_data[0];
+	y = collision_data[1];
+	hsp = collision_data[2];
+	vsp = collision_data[3];
+} else {
+	x += hsp;
+	y += vsp;
+}
 
 
 // Flip sprite based on direction
@@ -210,3 +237,8 @@ if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall))
 // Adjust y position (visual only)
 y_correct = (sprite_height - (sprite_height*draw_yscale)) / 2;
 
+if (is_dying) {
+	draw_yscale = -1;
+	image_speed = 0;
+	y_correct = 0;
+}
