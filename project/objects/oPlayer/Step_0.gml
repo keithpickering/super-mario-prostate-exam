@@ -136,14 +136,15 @@ if (is_onfloor) {
 			is_jump = 2;
 			// Reset double/triple jump
 			jump_current = 1;
-		} else if (timer_crouch > 10) && (abs(hsp) > 0) && (move != 0) {
+		} // Dive
+		/*else if (timer_crouch > 10) && (abs(hsp) > 1) && (move != 0) {
 			// Long jump
 			vsp = -jump_max / 1.25;
 			hsp = hsp_max;
 			is_jump = 4;
 			// Reset double/triple jump
 			jump_current = 1;
-		} else {
+		}*/else {
 			// Regular jump
 			var this_doublejump_multi = 1;
 			// Double/triple jump counter
@@ -155,7 +156,7 @@ if (is_onfloor) {
 				if (jump_current == 2) {
 					this_doublejump_multi = 1.1;
 				} else if (jump_current == 3) {
-					if (abs(hsp) > 0) && (move != 0) {
+					if (abs(hsp) > 0) {
 						this_doublejump_multi = 1.2;
 					} else {
 						jump_current = 1;
@@ -227,6 +228,8 @@ if (is_onfloor) {
 			}
 		}
 	}
+	
+	is_dive = false;
 } else {
 	is_sliding = false;
 	timer_jumpcancel = 0;
@@ -236,6 +239,14 @@ if (is_onfloor) {
 		timer_falldamage++;
 	} else {
 		timer_falldamage = 0;
+	}*/
+	
+	/*if (key_jump_pressed) && (!is_dive) {
+		if (key_right || key_left) {
+			// Dive;
+			vsp = -12;
+			is_dive = true;
+		}
 	}*/
 	
 	// Check if jump key has been released while still moving up,
@@ -380,6 +391,7 @@ if (this_enemy != noone) && (!this_enemy.is_dead) && !(this_enemy.is_dying) {
 	if (is_crouch) && (abs(hsp) >= walksp) {
 		with (this_enemy) {
 			vsp = -10;
+			hsp = sign(oPlayer.hsp) * 2;
 			is_dying = true;
 		}
 	} else if ((vsp > 0) && (!is_onfloor)) || (is_crouch) && (is_onslope) && (abs(hsp) > 4) {

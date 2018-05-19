@@ -88,6 +88,8 @@ is_hurt = false;
 
 is_sliding = false;
 
+is_dive = false;
+
 
 
 // Draw variables
