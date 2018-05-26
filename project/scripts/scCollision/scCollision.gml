@@ -9,7 +9,8 @@ var this_vsp = argument3;
  * HORIZONTAL COLLISION
  */
 
-if (place_meeting(this_x+this_hsp,this_y,oWall)){
+var hWall = instance_place(this_x + this_hsp, this_y, oWall);
+if (hWall != noone) && (!hWall.jumpthrough) {
     // Up slope
 	var yplus = 0;
     while (place_meeting(this_x + this_hsp, this_y - yplus, oWall)) && (yplus <= abs(this_hsp)) {
@@ -37,12 +38,23 @@ if (!place_meeting(this_x, this_y, oWall)) && (this_vsp >= 0) && (place_meeting(
 /**
  * VERTICAL COLLISION
  */
-
-if (place_meeting(this_x, this_y + this_vsp, oWall)) {
-	while (!place_meeting(this_x, this_y + sign(this_vsp), oWall)) {
-		this_y += sign(this_vsp);
+var wall = instance_place(this_x, this_y + this_vsp, oWall);
+if (wall != noone) {
+	if (wall.jumpthrough) {
+		if (this_vsp > 0) {
+			if (!place_meeting(this_x, this_y, wall))  {
+				while (!place_meeting(this_x, this_y + sign(this_vsp), oWall)) {
+					this_y += sign(this_vsp);
+				}
+				this_vsp = 0;
+			}
+		}
+	} else {
+		while (!place_meeting(this_x, this_y + sign(this_vsp), oWall)) {
+			this_y += sign(this_vsp);
+		}
+		this_vsp = 0;
 	}
-	this_vsp = 0;
 }
 this_y += this_vsp;
 

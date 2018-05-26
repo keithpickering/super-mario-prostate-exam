@@ -90,6 +90,8 @@ is_sliding = false;
 
 is_dive = false;
 
+is_in_jumpthrough = false;
+
 
 
 // Draw variables

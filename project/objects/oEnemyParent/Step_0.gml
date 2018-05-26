@@ -32,6 +32,7 @@ if (!is_dead) && (!is_dying) {
 			vsp -= 7.5;
 			is_alert = false;
 			is_chasing = true;
+			is_confused = false;
 			is_jump = true;
 		} else if (is_chasing) {
 			image_speed = 2;
@@ -81,6 +82,7 @@ if (!is_dead) && (!is_dying) {
 			}
 		} else if (!is_wander) {
 			is_wander = true;
+			is_confused = false;
 			alarm[1] = random_range(100, 200);
 		}
 		

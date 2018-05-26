@@ -15,21 +15,43 @@ key_crouch_released = keyboard_check_released(vk_down);
 
 // Check if we're against a wall
 was_onwall = is_onwall;
-if (place_meeting(x + 1, y, oWall)) && (place_meeting(x + 1, y - 48, oWall)) {
-	is_onwall = 1;
-} else if (place_meeting(x - 1, y, oWall)) && (place_meeting(x - 1, y - 48, oWall)) {
-	is_onwall = -1;
+if (!place_meeting(x, y, oWall)) {
+	if (place_meeting(x + 1, y, oWall)) && (place_meeting(x + 1, y - 48, oWall)) {
+		is_onwall = 1;
+	} else if (place_meeting(x - 1, y, oWall)) && (place_meeting(x - 1, y - 48, oWall)) {
+		is_onwall = -1;
+	} else {
+		is_onwall = 0;
+	}
 } else {
 	is_onwall = 0;
 }
 
+var wall_inside = instance_place(x, y, oWall);
+var wall_next = instance_place(x, y + vsp, oWall);
 // Check if we're on the floor
-is_onfloor = place_meeting(x, y + 1, oWall);
+is_onfloor = place_meeting(x, y + 1, oWall) && (wall_inside == noone) && (wall_next == noone);
 is_onslope = 0;
 if (place_meeting(x + 2, y + 1, oSlope)) {
 	is_onslope = -1;
 } else if (place_meeting(x - 2, y + 1, oSlope)) {
 	is_onslope = 1;
+}
+
+if (wall_inside != noone) {
+	if (wall_inside.jumpthrough) {
+		is_in_jumpthrough = true;
+	} else {
+		is_in_jumpthrough = false;
+	}
+} else if (wall_next != noone) {
+	if (wall_next.jumpthrough) {
+		is_in_jumpthrough = true;
+	} else {
+		is_in_jumpthrough = false;
+	}
+} else {
+	is_in_jumpthrough = false;
 }
 
 
@@ -269,7 +291,7 @@ if (is_onfloor) {
 		}
 	}
 	if (is_onwall != 0) {
-		jump_current = 0;
+		jump_current = 1;
 		
 		if (vsp > 0) {
 			if (!is_wallslide) {
@@ -452,7 +474,7 @@ vsp = collision_data[3];
 /**
  * ANIMATION
  */
-if (!is_onfloor) && (!is_groundpound) {
+if ((!is_onfloor) && (!is_groundpound)) || (is_jump > 0) {
 	image_speed = 0;
 	
 	if (is_jump == 2) {
@@ -488,7 +510,7 @@ if (!is_onfloor) && (!is_groundpound) {
 			}
 		}
 	}
-} else if (is_onfloor) {
+} else if (is_onfloor) && (!is_in_jumpthrough) {
 	image_speed = 1;
 	render_angle = 0;
 	
@@ -595,7 +617,7 @@ draw_xscale = lerp(draw_xscale, dir, 0.1);
 draw_yscale = lerp(draw_yscale, 1, 0.1);
 
 // Squash on landing
-if (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
+if (!is_in_jumpthrough) && (place_meeting(x, y + 1, oWall)) && (!place_meeting(x, yprevious + 1, oWall)) && (!place_meeting(xprevious, yprevious + 1, oWall)) {
 	draw_xscale = 1.25 * dir;
 	var y_amt = vsp / 9;
 	if (y_amt < 0.65) {

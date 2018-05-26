@@ -1,3 +1,2 @@
 event_inherited();
-
-wander = true;
+jumpthrough = true;
