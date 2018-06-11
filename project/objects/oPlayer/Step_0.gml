@@ -109,7 +109,7 @@ if (hsp < 0 && key_right) || (hsp > 0 && key_left) {
 	}
 }
 
-if (is_onfloor) {
+if (is_onfloor) && (!is_in_jumpthrough) {
 	// Status vars
 	is_jump = 0;
 	is_wallslide = 0;
